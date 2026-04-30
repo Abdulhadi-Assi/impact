@@ -1,8 +1,15 @@
 spring:
+  application:
+    name: impact
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${keycloak.auth-server-url}/realms/${keycloak.realm}
   datasource:
     url: ${JDBC_DATABASE_URL:jdbc:postgresql://localhost:5432/impact}
     username: ${JDBC_DATABASE_USERNAME:postgres}
-    password: ${JDBC_DATABASE_PASSWORD:<<YOUR_PASSWORD>>}
+    password: ${JDBC_DATABASE_PASSWORD:P4ssword!}
     hikari:
       connection-timeout: 30000
       maximum-pool-size: 10
@@ -27,5 +34,30 @@ error:
     full-stacktrace-http-statuses: 5xx
     log-levels:
       5xx: ERROR
+
 springdoc:
   pathsToMatch: /, /api/**
+  swagger-ui:
+    oauth:
+      client-id: ${keycloak.client-id}
+      realm: ${keycloak.realm}
+      appName: impact
+swagger:
+  auth-server-url: http://localhost:9098
+  realm: impact-realm
+
+server:
+  port: 8080
+
+keycloak:
+  auth-server-url: http://localhost:9098
+  realm: impact-realm
+  client-id: spring-client
+  client-secret: my-spring-client-secret
+
+jwt:
+  auth:
+    converter:
+      resource-id: impact-realm
+      principle-attribute: preferred_username
+

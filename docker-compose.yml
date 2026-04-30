@@ -76,7 +76,7 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: P4ssword!
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      KEYCLOAK_AUTH_SERVER_URL: http://localhost:9098
+      KEYCLOAK_AUTH_SERVER_URL: http://keyclaok:9098
       KEYCLOAK_CLIENT_SECRET: my-spring-client-secret
       SWAGGER_AUTH_SERVER_URL: http://localhost:9098
     networks:
