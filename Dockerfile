@@ -14,6 +14,6 @@ RUN mvn clean package -DskipTests
 # Second stage: Create a smaller image with only the JRE
 FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
-COPY --from=build /app/target/kafu-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /app/target/impact-0.0.1-SNAPSHOT.jar app.jar
 EXPOSE 8080
 ENTRYPOINT ["java","-jar","/app/app.jar"]
