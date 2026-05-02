@@ -32,7 +32,7 @@ public class Attendance {
     private AttendanceStatus status;
 
     @Column(nullable = false)
-    private Integer hoursThatDay;
+    private Double hoursThatDay;
 
     @Column(columnDefinition = "text")
     private String notes;

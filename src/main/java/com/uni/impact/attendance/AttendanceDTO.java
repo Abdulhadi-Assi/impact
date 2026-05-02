@@ -21,7 +21,7 @@ public class AttendanceDTO {
     private AttendanceStatus status;
 
     @NotNull
-    private Integer hoursThatDay;
+    private Double hoursThatDay;
 
     private String notes;
 
