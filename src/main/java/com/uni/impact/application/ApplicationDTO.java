@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 
@@ -29,6 +30,8 @@ public class ApplicationDTO {
 
 	@NotNull
 	private OffsetDateTime appliedAt;
+
+	private LocalDateTime withdrawnAt;
 
 	@NotNull
 	private OffsetDateTime createdAt;
