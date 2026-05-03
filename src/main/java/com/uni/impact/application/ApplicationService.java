@@ -1,17 +1,17 @@
 package com.uni.impact.application;
 
-
 import com.uni.impact.campaign.Campaign;
 import com.uni.impact.campaign.CampaignRepository;
 import com.uni.impact.user.User;
 import com.uni.impact.user.UserRepository;
 import com.uni.impact.util.NotFoundException;
+import com.uni.impact.application.dto.VolunteerSearchCriteria;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +37,12 @@ public class ApplicationService {
 
     public Page<Application> findAll(Pageable pageable) {
         return applicationRepository.findAll(pageable);
+    }
+
+
+    public Page<Application> searchVolunteers(VolunteerSearchCriteria criteria, Pageable pageable) {
+        Specification<Application> spec = VolunteerSpecification.withSearchCriteria(criteria);
+        return applicationRepository.findAll(spec, pageable);
     }
 
     public Application findById(final Long id) {
@@ -107,10 +113,6 @@ public class ApplicationService {
         application.setAppliedAt(java.time.OffsetDateTime.now());
         application.setMotivationLetter(applicationDTO == null ? null : applicationDTO.getMotivationLetter());
         applicationRepository.save(application);
-    }
-
-    public Application findByIdWithRelations(final Long id) {
-        return findById(id);
     }
 
     @Transactional

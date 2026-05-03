@@ -42,12 +42,12 @@ public class AttendanceService {
         return attendanceRepository.save(attendance);
     }
 
-//    @Transactional
-//    public void createBulk(final java.util.List<AttendanceDTO> attendanceList) {
-//        for (AttendanceDTO dto : attendanceList) {
-//            create(dto);
-//        }
-//    }
+    @Transactional
+    public void createBulk(final java.util.List<AttendanceDTO> attendanceList) {
+        for (AttendanceDTO dto : attendanceList) {
+            create(dto);
+        }
+    }
 
     @Transactional
     public Attendance update(final Long attendanceId, final AttendanceDTO attendanceDTO) {

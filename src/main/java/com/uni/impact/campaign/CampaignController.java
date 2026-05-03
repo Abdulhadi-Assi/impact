@@ -1,5 +1,6 @@
 package com.uni.impact.campaign;
 
+import com.uni.impact.campaign.dto.CampaignSearchCriteria;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,16 +18,24 @@ public class CampaignController {
     private final CampaignService campaignService;
     private final CampaignMapper campaignMapper;
 
-
-    @PatchMapping("/{id}/status")
-    public void updateStatus(@PathVariable Long id, @RequestBody final CampaignStatusUpdateDTO statusDTO) {
-        campaignService.updateStatus(id, statusDTO.getStatus());
-        //return ResponseEntity.ok(campaignMapper.toDto(campaignService.findById(id)));
-    }
-
     @GetMapping
-    public ResponseEntity<Page<CampaignDTO>> findAll(Pageable pageable) {
-        return ResponseEntity.ok(campaignService.findAll(pageable).map(campaignMapper::toDto));
+    public ResponseEntity<Page<CampaignDTO>> findAll(
+            @RequestParam(required = false) String searchText,
+            @RequestParam(required = false) CampaignStatus status,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) Long collegeId,
+            @RequestParam(required = false) Long proposedByUserId,
+            Pageable pageable) {
+
+        CampaignSearchCriteria criteria = new CampaignSearchCriteria();
+        criteria.setSearchText(searchText);
+        criteria.setStatus(status);
+        criteria.setCategoryId(categoryId);
+        criteria.setCollegeId(collegeId);
+        criteria.setProposedByUserId(proposedByUserId);
+
+        Page<Campaign> campaigns = campaignService.searchCampaigns(criteria, pageable);
+        return ResponseEntity.ok(campaigns.map(campaignMapper::toDto));
     }
 
     @GetMapping("/{id}")
@@ -44,6 +53,18 @@ public class CampaignController {
     @PutMapping("/{id}")
     public ResponseEntity<CampaignDTO> update(@PathVariable Long id, @RequestBody @Valid final CampaignDTO campaignDTO) {
         campaignService.update(id, campaignDTO);
+        return ResponseEntity.ok(campaignMapper.toDto(campaignService.findById(id)));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<CampaignDTO> patchDetails(@PathVariable Long id, @RequestBody final CampaignDTO campaignDTO) {
+        campaignService.patchDetails(id, campaignDTO);
+        return ResponseEntity.ok(campaignMapper.toDto(campaignService.findById(id)));
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<CampaignDTO> updateStatus(@PathVariable Long id, @RequestBody final CampaignStatusUpdateDTO statusDTO) {
+        campaignService.updateStatus(id, statusDTO.getStatus());
         return ResponseEntity.ok(campaignMapper.toDto(campaignService.findById(id)));
     }
 

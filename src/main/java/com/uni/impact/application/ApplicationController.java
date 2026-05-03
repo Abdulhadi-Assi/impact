@@ -10,6 +10,7 @@ import java.net.URI;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import com.uni.impact.user.UserRepository;
+import com.uni.impact.application.dto.VolunteerSearchCriteria;
 
 
 @RestController
@@ -21,10 +22,24 @@ public class ApplicationController {
     private final ApplicationMapper applicationMapper;
     private final UserRepository userRepository;
 
-
     @GetMapping
-    public ResponseEntity<Page<ApplicationDTO>> findAll(Pageable pageable) {
-        return ResponseEntity.ok(applicationService.findAll(pageable).map(applicationMapper::toDto));
+    public ResponseEntity<Page<ApplicationDTO>> findAll(
+            @RequestParam(required = false) String searchText,
+            @RequestParam(required = false) ApplicationStatus status,
+            @RequestParam(required = false) Long collegeId,
+            @RequestParam(required = false) Long campaignId,
+            @RequestParam(required = false) Long studentId,
+            Pageable pageable) {
+
+        VolunteerSearchCriteria criteria = new VolunteerSearchCriteria();
+        criteria.setSearchText(searchText);
+        criteria.setStatus(status);
+        criteria.setCollegeId(collegeId);
+        criteria.setCampaignId(campaignId);
+        criteria.setStudentId(studentId);
+
+        Page<Application> applications = applicationService.searchVolunteers(criteria, pageable);
+        return ResponseEntity.ok(applications.map(applicationMapper::toDto));
     }
 
     @GetMapping("/{id}")
