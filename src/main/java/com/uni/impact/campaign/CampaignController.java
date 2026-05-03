@@ -17,6 +17,13 @@ public class CampaignController {
     private final CampaignService campaignService;
     private final CampaignMapper campaignMapper;
 
+
+    @PatchMapping("/{id}/status")
+    public void updateStatus(@PathVariable Long id, @RequestBody final CampaignStatusUpdateDTO statusDTO) {
+        campaignService.updateStatus(id, statusDTO.getStatus());
+        //return ResponseEntity.ok(campaignMapper.toDto(campaignService.findById(id)));
+    }
+
     @GetMapping
     public ResponseEntity<Page<CampaignDTO>> findAll(Pageable pageable) {
         return ResponseEntity.ok(campaignService.findAll(pageable).map(campaignMapper::toDto));

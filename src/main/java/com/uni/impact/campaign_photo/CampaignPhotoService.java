@@ -1,6 +1,5 @@
 package com.uni.impact.campaign_photo;
 
-
 import com.uni.impact.campaign.Campaign;
 import com.uni.impact.campaign.CampaignRepository;
 import com.uni.impact.progress.Progress;
@@ -27,6 +26,10 @@ public class CampaignPhotoService {
 
     public CampaignPhoto findById(final Long photoId) {
         return campaignPhotoRepository.findById(photoId).orElseThrow(NotFoundException::new);
+    }
+
+    public Page<CampaignPhoto> findByCampaign(final Long campaignId,Pageable pageable) {
+        return campaignPhotoRepository.findByCampaignCampaignId(campaignId, pageable);
     }
 
     @Transactional

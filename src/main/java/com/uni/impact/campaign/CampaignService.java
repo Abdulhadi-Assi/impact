@@ -29,6 +29,31 @@ public class CampaignService {
 
 
     @Transactional
+    public void updateStatus(final Long campaignId, final CampaignStatus newStatus) {
+        Campaign campaign = campaignRepository.findById(campaignId).orElseThrow(NotFoundException::new);
+//        CampaignStatus current = campaign.getStatus();
+//        if (!isValidTransition(current, newStatus)) {
+//            throw new IllegalArgumentException("Invalid status transition from " + current + " to " + newStatus);
+//        }
+        campaign.setStatus(newStatus);
+        campaignRepository.save(campaign);
+    }
+
+//    private boolean isValidTransition(final CampaignStatus from, final CampaignStatus to) {
+//        if (from == to) return true;
+//        switch (from) {
+//            case PENDING:
+//                return to == CampaignStatus.APPROVED || to == CampaignStatus.REJECTED || to == CampaignStatus.CANCELED;
+//            case APPROVED:
+//                return to == CampaignStatus.ONGOING || to == CampaignStatus.CANCELED;
+//            case ONGOING:
+//                return to == CampaignStatus.COMPLETED || to == CampaignStatus.CANCELED;
+//            default:
+//                return false;
+//        }
+//    }
+
+    @Transactional
     public Campaign create(final CampaignDTO campaignDTO) {
         if (campaignDTO.getCampaignId() != null) {
             throw new IllegalArgumentException("A new campaign cannot already have an ID");

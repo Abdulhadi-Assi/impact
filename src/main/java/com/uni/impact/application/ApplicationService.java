@@ -22,6 +22,19 @@ public class ApplicationService {
     private final CampaignRepository campaignRepository;
     private final ApplicationMapper applicationMapper;
 
+    public Page<Application> findByCampaign(final Long campaignId, Pageable pageable) {
+        return applicationRepository.findByCampaignCampaignId(campaignId, pageable);
+    }
+
+    public Page<Application> findByStudent(final Long studentId, Pageable pageable) {
+        return applicationRepository.findByStudentUserId(studentId, pageable);
+    }
+
+    public Page<Application> findByStudentEmail(final String email, Pageable pageable) {
+        final User user = userRepository.findByEmailIgnoreCase(email).orElseThrow(NotFoundException::new);
+        return findByStudent(user.getUserId(), pageable);
+    }
+
     public Page<Application> findAll(Pageable pageable) {
         return applicationRepository.findAll(pageable);
     }
@@ -81,5 +94,71 @@ public class ApplicationService {
         final User removedBy = applicationDTO.getRemovedBy() == null ? null : userRepository.findById(applicationDTO.getRemovedBy())
                 .orElseThrow(() -> new NotFoundException("removedBy not found"));
         application.setRemovedBy(removedBy);
+    }
+
+    @Transactional
+    public void applyToCampaign(final Long campaignId, final String studentEmail, final ApplicationDTO applicationDTO) {
+        final User student = studentEmail == null ? null : userRepository.findByEmailIgnoreCase(studentEmail).orElseThrow(NotFoundException::new);
+        final Campaign campaign = campaignRepository.findById(campaignId).orElseThrow(() -> new NotFoundException("campaign not found"));
+        Application application = new Application();
+        application.setCampaign(campaign);
+        application.setStudent(student);
+        application.setStatus(ApplicationStatus.PENDING);
+        application.setAppliedAt(java.time.OffsetDateTime.now());
+        application.setMotivationLetter(applicationDTO == null ? null : applicationDTO.getMotivationLetter());
+        applicationRepository.save(application);
+    }
+
+    public Application findByIdWithRelations(final Long id) {
+        return findById(id);
+    }
+
+    @Transactional
+    public void changeStatus(final Long id, final ApplicationStatus newStatus, final Long reviewerId, final String rejectionReason) {
+        Application application = applicationRepository.findById(id).orElseThrow(NotFoundException::new);
+        // simple transition rules
+        ApplicationStatus current = application.getStatus();
+        boolean allowed = false;
+        if (current == ApplicationStatus.PENDING) {
+            allowed = newStatus == ApplicationStatus.APPROVED || newStatus == ApplicationStatus.REJECTED || newStatus == ApplicationStatus.CANCELLED;
+        } else if (current == ApplicationStatus.APPROVED) {
+            allowed = newStatus == ApplicationStatus.CANCELLED;
+        }
+        if (!allowed) {
+            throw new IllegalArgumentException("Invalid status transition from " + current + " to " + newStatus);
+        }
+        application.setStatus(newStatus);
+        application.setReviewedAt(java.time.OffsetDateTime.now());
+        if (reviewerId != null) {
+            application.setReviewedBy(userRepository.findById(reviewerId).orElseThrow(NotFoundException::new));
+        }
+        if (newStatus == ApplicationStatus.REJECTED && rejectionReason != null) {
+            application.setRejectionReason(rejectionReason);
+        }
+        applicationRepository.save(application);
+    }
+
+    @Transactional
+    public void withdraw(final Long id, final Long studentId) {
+        Application application = applicationRepository.findById(id).orElseThrow(NotFoundException::new);
+        if (!application.getStudent().getUserId().equals(studentId)) {
+            throw new IllegalArgumentException("Only the student can withdraw their application");
+        }
+        application.setStatus(ApplicationStatus.WITHDRAWN);
+        application.setWithdrawnAt(java.time.LocalDateTime.now());
+        applicationRepository.save(application);
+    }
+
+    @Transactional
+    public void remove(final Long id, final Long removedById, final String removalReason) {
+        Application application = applicationRepository.findById(id).orElseThrow(NotFoundException::new);
+        application.setRemovedAt(java.time.OffsetDateTime.now());
+        application.setRemovalReason(removalReason);
+        if (removedById != null) {
+            application.setRemovedBy(userRepository.findById(removedById).orElseThrow(NotFoundException::new));
+        }
+        // mark canceled when removed
+        application.setStatus(ApplicationStatus.CANCELLED);
+        applicationRepository.save(application);
     }
 }
