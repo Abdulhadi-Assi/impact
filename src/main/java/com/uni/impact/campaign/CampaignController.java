@@ -19,21 +19,7 @@ public class CampaignController {
     private final CampaignMapper campaignMapper;
 
     @GetMapping
-    public ResponseEntity<Page<CampaignDTO>> findAll(
-            @RequestParam(required = false) String searchText,
-            @RequestParam(required = false) CampaignStatus status,
-            @RequestParam(required = false) Long categoryId,
-            @RequestParam(required = false) Long collegeId,
-            @RequestParam(required = false) Long proposedByUserId,
-            Pageable pageable) {
-
-        CampaignSearchCriteria criteria = new CampaignSearchCriteria();
-        criteria.setSearchText(searchText);
-        criteria.setStatus(status);
-        criteria.setCategoryId(categoryId);
-        criteria.setCollegeId(collegeId);
-        criteria.setProposedByUserId(proposedByUserId);
-
+    public ResponseEntity<Page<CampaignDTO>> findAll(@ModelAttribute CampaignSearchCriteria criteria, Pageable pageable) {
         Page<Campaign> campaigns = campaignService.searchCampaigns(criteria, pageable);
         return ResponseEntity.ok(campaigns.map(campaignMapper::toDto));
     }

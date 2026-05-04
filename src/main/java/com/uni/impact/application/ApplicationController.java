@@ -23,21 +23,7 @@ public class ApplicationController {
     private final UserRepository userRepository;
 
     @GetMapping
-    public ResponseEntity<Page<ApplicationDTO>> findAll(
-            @RequestParam(required = false) String searchText,
-            @RequestParam(required = false) ApplicationStatus status,
-            @RequestParam(required = false) Long collegeId,
-            @RequestParam(required = false) Long campaignId,
-            @RequestParam(required = false) Long studentId,
-            Pageable pageable) {
-
-        VolunteerSearchCriteria criteria = new VolunteerSearchCriteria();
-        criteria.setSearchText(searchText);
-        criteria.setStatus(status);
-        criteria.setCollegeId(collegeId);
-        criteria.setCampaignId(campaignId);
-        criteria.setStudentId(studentId);
-
+    public ResponseEntity<Page<ApplicationDTO>> findAll(@ModelAttribute VolunteerSearchCriteria criteria, Pageable pageable) {
         Page<Application> applications = applicationService.searchVolunteers(criteria, pageable);
         return ResponseEntity.ok(applications.map(applicationMapper::toDto));
     }

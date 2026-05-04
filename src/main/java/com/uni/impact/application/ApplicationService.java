@@ -110,7 +110,7 @@ public class ApplicationService {
         application.setCampaign(campaign);
         application.setStudent(student);
         application.setStatus(ApplicationStatus.PENDING);
-        application.setAppliedAt(java.time.OffsetDateTime.now());
+        application.setAppliedAt(java.time.LocalDateTime.now());
         application.setMotivationLetter(applicationDTO == null ? null : applicationDTO.getMotivationLetter());
         applicationRepository.save(application);
     }
@@ -130,7 +130,7 @@ public class ApplicationService {
             throw new IllegalArgumentException("Invalid status transition from " + current + " to " + newStatus);
         }
         application.setStatus(newStatus);
-        application.setReviewedAt(java.time.OffsetDateTime.now());
+        application.setReviewedAt(java.time.LocalDateTime.now());
         if (reviewerId != null) {
             application.setReviewedBy(userRepository.findById(reviewerId).orElseThrow(NotFoundException::new));
         }
@@ -154,7 +154,7 @@ public class ApplicationService {
     @Transactional
     public void remove(final Long id, final Long removedById, final String removalReason) {
         Application application = applicationRepository.findById(id).orElseThrow(NotFoundException::new);
-        application.setRemovedAt(java.time.OffsetDateTime.now());
+        application.setRemovedAt(java.time.LocalDateTime.now());
         application.setRemovalReason(removalReason);
         if (removedById != null) {
             application.setRemovedBy(userRepository.findById(removedById).orElseThrow(NotFoundException::new));

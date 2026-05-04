@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 
 
 @Getter
@@ -26,13 +26,13 @@ public class AttendanceDTO {
     private String notes;
 
     @NotNull
-    private OffsetDateTime recordedAt;
+    private LocalDateTime recordedAt;
 
     @NotNull
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @NotNull
-    private OffsetDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
     @NotNull
     private Long student;

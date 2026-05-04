@@ -11,7 +11,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 
 
 @Entity
@@ -39,27 +38,27 @@ public class Application {
     private String rejectionReason;
 
     @Column(nullable = false)
-    private OffsetDateTime appliedAt;
+    private LocalDateTime appliedAt;
 
     @Column
     private LocalDateTime withdrawnAt;
 
     @Column(nullable = false, updatable = false)
     @CreatedDate
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @Column(nullable = false)
     @LastModifiedDate
-    private OffsetDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
     @Column
-    private OffsetDateTime reviewedAt;
+    private LocalDateTime reviewedAt;
 
     @Column(columnDefinition = "text")
     private String removalReason;
 
     @Column
-    private OffsetDateTime removedAt;
+    private LocalDateTime removedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id", nullable = false)
