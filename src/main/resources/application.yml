@@ -7,7 +7,7 @@ spring:
         jwt:
           issuer-uri: ${keycloak.auth-server-url}/realms/${keycloak.realm}
   datasource:
-    url: ${JDBC_DATABASE_URL:jdbc:postgresql://localhost:5433/impact}
+    url: ${JDBC_DATABASE_URL:jdbc:postgresql://localhost:5432/impact}
     username: ${JDBC_DATABASE_USERNAME:postgres}
     password: ${JDBC_DATABASE_PASSWORD:P4ssword!}
     hikari:
@@ -19,14 +19,13 @@ spring:
     open-in-view: false
     properties:
       hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
         jdbc:
           lob:
             non_contextual_creation: true
         id:
           new_generator_mappings: true
-  docker:
-    compose:
-      lifecycle-management: start-only
 error:
   handling:
     http-status-in-json-response: true
@@ -36,7 +35,6 @@ error:
       5xx: ERROR
 
 springdoc:
-  pathsToMatch: /, /api/**
   swagger-ui:
     oauth:
       client-id: ${keycloak.client-id}
