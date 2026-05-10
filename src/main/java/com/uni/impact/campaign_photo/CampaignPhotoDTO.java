@@ -21,10 +21,8 @@ public class CampaignPhotoDTO {
     @NotNull
     private LocalDateTime uploadedAt;
 
-    @NotNull
     private LocalDateTime createdAt;
 
-    @NotNull
     private LocalDateTime updatedAt;
 
     @NotNull

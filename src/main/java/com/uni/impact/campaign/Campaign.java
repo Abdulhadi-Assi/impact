@@ -11,7 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -20,7 +20,7 @@ import java.util.Set;
 
 
 @Entity
-@EntityListeners(AuditingEntityListener.class)
+@EnableJpaAuditing
 @Getter
 @Setter
 public class Campaign {
@@ -55,11 +55,11 @@ public class Campaign {
     @Column
     private LocalDateTime publishedAt;
 
-    @Column(nullable = false, updatable = false)
+    @Column(updatable = false)
     @CreatedDate
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
+    @Column
     @LastModifiedDate
     private LocalDateTime updatedAt;
 

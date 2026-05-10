@@ -31,10 +31,8 @@ public class ApplicationDTO {
 
 	private LocalDateTime withdrawnAt;
 
-	@NotNull
 	private LocalDateTime createdAt;
 
-	@NotNull
 	private LocalDateTime updatedAt;
 
 	private LocalDateTime reviewedAt;

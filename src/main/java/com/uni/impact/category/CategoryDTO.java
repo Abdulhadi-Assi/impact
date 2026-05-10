@@ -18,10 +18,8 @@ public class CategoryDTO {
     @Size(max = 100)
     private String name;
 
-    @NotNull
     private LocalDateTime createdAt;
 
-    @NotNull
     private LocalDateTime updatedAt;
 
 }

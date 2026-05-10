@@ -18,10 +18,8 @@ public class ProgressDTO {
 
     private String notes;
 
-    @NotNull
     private LocalDateTime createdAt;
 
-    @NotNull
     private LocalDateTime updatedAt;
 
     @NotNull

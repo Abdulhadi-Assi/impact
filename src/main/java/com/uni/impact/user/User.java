@@ -10,7 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "\"user\"")
-@EntityListeners(AuditingEntityListener.class)
+@EnableJpaAuditing
 @Getter
 @Setter
 public class User {

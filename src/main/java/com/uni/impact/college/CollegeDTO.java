@@ -20,10 +20,8 @@ public class CollegeDTO {
 
     private String description;
 
-    @NotNull
     private LocalDateTime createdAt;
 
-    @NotNull
     private LocalDateTime updatedAt;
 
 }

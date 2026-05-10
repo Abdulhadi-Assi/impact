@@ -28,10 +28,8 @@ public class AttendanceDTO {
     @NotNull
     private LocalDateTime recordedAt;
 
-    @NotNull
     private LocalDateTime createdAt;
 
-    @NotNull
     private LocalDateTime updatedAt;
 
     @NotNull

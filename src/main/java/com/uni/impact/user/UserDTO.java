@@ -44,10 +44,8 @@ public class UserDTO {
     @JsonProperty("isBanned")
     private Boolean isBanned;
 
-    @NotNull
     private LocalDateTime createdAt;
 
-    @NotNull
     private LocalDateTime updatedAt;
 
     @NotNull

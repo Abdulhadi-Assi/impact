@@ -36,10 +36,8 @@ public class CampaignDTO {
 
     private LocalDateTime publishedAt;
 
-    @NotNull
     private LocalDateTime createdAt;
 
-    @NotNull
     private LocalDateTime updatedAt;
 
     @NotNull
