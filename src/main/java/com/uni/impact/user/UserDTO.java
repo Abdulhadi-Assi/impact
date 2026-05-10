@@ -19,6 +19,8 @@ public class UserDTO {
     @Size(max = 50)
     private String studentNumber;
 
+    private String keycloakId;
+
     @NotNull
     @Size(max = 100)
     private String firstName;

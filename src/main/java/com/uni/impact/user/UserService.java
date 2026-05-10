@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -28,6 +30,10 @@ public class UserService {
     public User findByEmail(final String email) {
         return userRepository.findByEmailIgnoreCase(email).orElseThrow(NotFoundException::new);
     }
+    public Optional<User> findUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
 
     @Transactional
     public User create(final UserDTO userDTO) {

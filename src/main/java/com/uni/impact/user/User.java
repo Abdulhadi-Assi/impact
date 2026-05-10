@@ -32,6 +32,9 @@ public class User {
     @Column(length = 50)
     private String studentNumber;
 
+    @Column(nullable = false, unique = true, length = 50)
+    private String keycloakId;
+
     @Column(nullable = false, length = 100)
     private String firstName;
 
@@ -48,19 +51,19 @@ public class User {
     private Integer academicYear;
 
 
-    @Column(nullable = false)
+    @Column
     private Boolean isBanned;
 
-    @Column(nullable = false, updatable = false)
+    @Column(updatable = false)
     @CreatedDate
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
+    @Column()
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "college_id", nullable = false)
+    @JoinColumn(name = "college_id")
     private College college;
 
     @OneToMany(mappedBy = "proposedBy")
