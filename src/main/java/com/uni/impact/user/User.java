@@ -10,7 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "\"user\"")
-@EnableJpaAuditing
+@EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
 public class User {
@@ -51,8 +51,8 @@ public class User {
     private Integer academicYear;
 
 
-    @Column
-    private Boolean isBanned;
+    @Column(nullable = false)
+    private Boolean isBanned = false;
 
     @Column(updatable = false)
     @CreatedDate
