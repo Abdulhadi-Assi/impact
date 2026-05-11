@@ -26,7 +26,7 @@ public class User {
 
     @Id
     @Column(updatable = false)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
     @Column(length = 50)
@@ -58,7 +58,7 @@ public class User {
     @CreatedDate
     private LocalDateTime createdAt;
 
-    @Column()
+    @Column(insertable = false)
     @LastModifiedDate
     private LocalDateTime updatedAt;
 

@@ -21,7 +21,7 @@ public class Category {
 
     @Id
     @Column(updatable = false)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long categoryId;
 
     @Column(nullable = false, length = 100)
@@ -31,7 +31,7 @@ public class Category {
     @CreatedDate
     private LocalDateTime createdAt;
 
-    @Column
+    @Column(insertable = false)
     @LastModifiedDate
     private LocalDateTime updatedAt;
 

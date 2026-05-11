@@ -27,7 +27,7 @@ public class Campaign {
 
     @Id
     @Column(updatable = false)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long campaignId;
 
     @Column(nullable = false)
@@ -59,7 +59,7 @@ public class Campaign {
     @CreatedDate
     private LocalDateTime createdAt;
 
-    @Column
+    @Column(insertable = false)
     @LastModifiedDate
     private LocalDateTime updatedAt;
 

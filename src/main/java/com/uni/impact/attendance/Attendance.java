@@ -20,7 +20,7 @@ public class Attendance {
 
     @Id
     @Column(nullable = false, updatable = false)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long attendanceId;
 
     @Column(nullable = false)
@@ -43,7 +43,7 @@ public class Attendance {
     @CreatedDate
     private LocalDateTime createdAt;
 
-    @Column
+    @Column(insertable = false)
     @LastModifiedDate
     private LocalDateTime updatedAt;
 

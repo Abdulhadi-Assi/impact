@@ -22,7 +22,7 @@ public class Progress {
 
     @Id
     @Column(nullable = false, updatable = false)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long progressId;
 
     @Column(nullable = false)
@@ -35,7 +35,7 @@ public class Progress {
     @CreatedDate
     private LocalDateTime createdAt;
 
-    @Column
+    @Column(insertable = false)
     @LastModifiedDate
     private LocalDateTime updatedAt;
 

@@ -11,6 +11,7 @@ public interface UserMapper {
     UserDTO toDto(User entity);
 
     @Mapping(target = "college", ignore = true)
+    @Mapping(target = "isBanned", defaultExpression = "java(Boolean.FALSE)")
     @Mapping(target = "proposedByCampaigns", ignore = true)
     @Mapping(target = "approvedByCampaigns", ignore = true)
     @Mapping(target = "managedByCampaigns", ignore = true)
