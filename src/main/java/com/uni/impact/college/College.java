@@ -27,9 +27,6 @@ public class College {
     @Column(nullable = false)
     private String name;
 
-    @Column(columnDefinition = "text")
-    private String description;
-
     @Column(updatable = false)
     @CreatedDate
     private LocalDateTime createdAt;

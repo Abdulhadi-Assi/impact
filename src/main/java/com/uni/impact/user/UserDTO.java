@@ -39,6 +39,7 @@ public class UserDTO {
 
     private Integer academicYear;
 
+    private String photo;
 
     @NotNull
     @JsonProperty("isBanned")

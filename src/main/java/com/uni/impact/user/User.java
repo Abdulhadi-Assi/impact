@@ -50,6 +50,8 @@ public class User {
     @Column
     private Integer academicYear;
 
+    @Column(length = 500)
+    private String photo;
 
     @Column(nullable = false)
     private Boolean isBanned = false;

@@ -9,7 +9,6 @@
 CREATE TABLE IF NOT EXISTS college (
     college_id   SERIAL       PRIMARY KEY,
     name         VARCHAR(150) NOT NULL,
-    description  TEXT,
     created_at   TIMESTAMP    NOT NULL DEFAULT NOW(),
     updated_at   TIMESTAMP
 );
@@ -27,6 +26,7 @@ CREATE TABLE IF NOT EXISTS "user" (
     email          VARCHAR(150) UNIQUE NOT NULL,
     phone          VARCHAR(30),
     academic_year  SMALLINT,
+    photo          VARCHAR(500),
     is_banned      BOOLEAN      NOT NULL DEFAULT FALSE,
     created_at     TIMESTAMP    NOT NULL DEFAULT NOW(),
     updated_at     TIMESTAMP

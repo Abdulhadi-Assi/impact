@@ -44,6 +44,9 @@ public class UserService {
             throw new IllegalArgumentException("Email already exists");
         }
         User user = userMapper.toEntity(userDTO);
+        if (user.getPhoto() == null) {
+            user.setPhoto("https://i.pravatar.cc/400?u=" + userDTO.getEmail());
+        }
         applyRelations(user, userDTO);
         return userRepository.save(user);
     }
