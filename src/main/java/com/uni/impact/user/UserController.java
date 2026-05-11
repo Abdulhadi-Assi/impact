@@ -56,8 +56,8 @@ public class UserController {
     }
 
     @PatchMapping("/{id}/ban")
-    public ResponseEntity<UserDTO> ban(@PathVariable Long id) {
-        User user = userService.ban(id);
+    public ResponseEntity<UserDTO> toggleBan(@PathVariable Long id) {
+        User user = userService.toggleBan(id);
         return ResponseEntity.ok(userMapper.toDto(user));
     }
 

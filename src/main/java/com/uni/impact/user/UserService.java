@@ -76,12 +76,9 @@ public class UserService {
     }
 
     @Transactional
-    public User ban(Long id) {
+    public User toggleBan(Long id) {
         User user = userRepository.findById(id).orElseThrow(NotFoundException::new);
-        if (user.getIsBanned()) {
-            return user;
-        }
-        user.setIsBanned(true);
+        user.setIsBanned(!user.getIsBanned());
         return userRepository.save(user);
     }
 }
