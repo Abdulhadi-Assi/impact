@@ -68,6 +68,7 @@ CREATE TABLE IF NOT EXISTS campaign (
     start_date      DATE,
     end_date        DATE,
     max_volunteers  INT,
+    photo           VARCHAR(500),
     status          campaign_status NOT NULL DEFAULT 'PENDING',
     published_at    TIMESTAMP,
     created_at      TIMESTAMP       NOT NULL DEFAULT NOW(),

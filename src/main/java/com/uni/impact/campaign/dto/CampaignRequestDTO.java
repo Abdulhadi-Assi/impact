@@ -1,5 +1,6 @@
-package com.uni.impact.campaign;
+package com.uni.impact.campaign.dto;
 
+import com.uni.impact.campaign.CampaignStatus;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -10,12 +11,10 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class CampaignDTO {
+public class CampaignRequestDTO {
 
-    private Long campaignId;
-
-    @NotNull
     @Size(max = 255)
+    @NotNull
     private String title;
 
     private String description;
@@ -31,22 +30,22 @@ public class CampaignDTO {
 
     private Integer maxVolunteers;
 
+    @Size(max = 500)
+    private String photo;
+
     @NotNull
     private CampaignStatus status;
 
     private LocalDateTime publishedAt;
 
-    private LocalDateTime createdAt;
+    @NotNull
+    private Long proposedById;
 
-    private LocalDateTime updatedAt;
+    private Long approvedById;
+
+    private Long managedById;
 
     @NotNull
-    private Long proposedBy;
-
-    private Long approvedBy;
-
-    private Long managedBy;
-
-    @NotNull
-    private Long category;
+    private Long categoryId;
 }
+

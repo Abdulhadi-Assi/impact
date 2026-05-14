@@ -48,6 +48,9 @@ public class Campaign {
     @Column
     private Integer maxVolunteers;
 
+    @Column(length = 500)
+    private String photo;
+
     @Column(nullable = false, length = 20)
     @Enumerated(EnumType.STRING)
     private CampaignStatus status;

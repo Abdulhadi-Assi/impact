@@ -1,5 +1,7 @@
 package com.uni.impact.campaign;
 
+import com.uni.impact.campaign.dto.CampaignRequestDTO;
+import com.uni.impact.campaign.dto.CampaignResponseDTO;
 import com.uni.impact.campaign.dto.CampaignSearchCriteria;
 import com.uni.impact.category.Category;
 import com.uni.impact.category.CategoryRepository;
@@ -22,37 +24,44 @@ public class CampaignService {
     private final CategoryRepository categoryRepository;
     private final CampaignMapper campaignMapper;
 
-    public Page<Campaign> findAll(Pageable pageable) {
-        return campaignRepository.findAll(pageable);
+    @Transactional(readOnly = true)
+    public Page<CampaignResponseDTO> findAll(Pageable pageable) {
+        return campaignRepository.findAll(pageable).map(campaignMapper::toResponseDto);
     }
 
 
-    public Page<Campaign> searchCampaigns(CampaignSearchCriteria criteria, Pageable pageable) {
+    @Transactional(readOnly = true)
+    public Page<CampaignResponseDTO> searchCampaigns(CampaignSearchCriteria criteria, Pageable pageable) {
         Specification<Campaign> spec = CampaignSpecification.withSearchCriteria(criteria);
-        return campaignRepository.findAll(spec, pageable);
+        return campaignRepository.findAll(spec, pageable).map(campaignMapper::toResponseDto);
     }
 
+    @Transactional(readOnly = true)
     public Campaign findById(final Long campaignId) {
         return campaignRepository.findById(campaignId).orElseThrow(NotFoundException::new);
     }
 
-    @Transactional
-    public Campaign patchDetails(final Long campaignId, final CampaignDTO campaignDTO) {
-        Campaign campaign = campaignRepository.findById(campaignId).orElseThrow(NotFoundException::new);
-        // Use mapper which ignores nulls to update only provided fields; do NOT apply relations for details-only
-        campaignMapper.updateEntity(campaign, campaignDTO);
-        return campaignRepository.save(campaign);
+    @Transactional(readOnly = true)
+    public CampaignResponseDTO findDtoById(final Long campaignId) {
+        return campaignMapper.toResponseDto(findById(campaignId));
     }
 
     @Transactional
-    public Campaign updateStatus(final Long campaignId, final CampaignStatus newStatus) {
+    public CampaignResponseDTO patchDetails(final Long campaignId, final CampaignRequestDTO campaignDTO) {
+        Campaign campaign = campaignRepository.findById(campaignId).orElseThrow(NotFoundException::new);
+        campaignMapper.updateEntity(campaign, campaignDTO);
+        return campaignMapper.toResponseDto(campaignRepository.save(campaign));
+    }
+
+    @Transactional
+    public CampaignResponseDTO updateStatus(final Long campaignId, final CampaignStatus newStatus) {
         Campaign campaign = campaignRepository.findById(campaignId).orElseThrow(NotFoundException::new);
         CampaignStatus current = campaign.getStatus();
         if (!isValidTransition(current, newStatus)) {
             throw new IllegalArgumentException("Invalid status transition from " + current + " to " + newStatus);
         }
         campaign.setStatus(newStatus);
-        return campaignRepository.save(campaign);
+        return campaignMapper.toResponseDto(campaignRepository.save(campaign));
     }
 
     private boolean isValidTransition(final CampaignStatus from, final CampaignStatus to) {
@@ -67,22 +76,19 @@ public class CampaignService {
     }
 
     @Transactional
-    public Campaign create(final CampaignDTO campaignDTO) {
-        if (campaignDTO.getCampaignId() != null) {
-            throw new IllegalArgumentException("A new campaign cannot already have an ID");
-        }
+    public CampaignResponseDTO create(final CampaignRequestDTO campaignDTO) {
         Campaign campaign = campaignMapper.toEntity(campaignDTO);
         applyRelations(campaign, campaignDTO);
-        return campaignRepository.save(campaign);
+        return campaignMapper.toResponseDto(campaignRepository.save(campaign));
     }
 
     @Transactional
-    public Campaign update(final Long campaignId, final CampaignDTO campaignDTO) {
+    public CampaignResponseDTO update(final Long campaignId, final CampaignRequestDTO campaignDTO) {
         Campaign campaign = campaignRepository.findById(campaignId)
                 .orElseThrow(NotFoundException::new);
         campaignMapper.updateEntity(campaign, campaignDTO);
         applyRelations(campaign, campaignDTO);
-        return campaignRepository.save(campaign);
+        return campaignMapper.toResponseDto(campaignRepository.save(campaign));
     }
 
     public void delete(final Long campaignId) {
@@ -96,17 +102,17 @@ public class CampaignService {
     }
 
 
-    private void applyRelations(final Campaign campaign, final CampaignDTO campaignDTO) {
-        final User proposedBy = campaignDTO.getProposedBy() == null ? null : userRepository.findById(campaignDTO.getProposedBy())
+    private void applyRelations(final Campaign campaign, final CampaignRequestDTO campaignDTO) {
+        final User proposedBy = campaignDTO.getProposedById() == null ? null : userRepository.findById(campaignDTO.getProposedById())
                 .orElseThrow(() -> new NotFoundException("proposedBy not found"));
         campaign.setProposedBy(proposedBy);
-        final User approvedBy = campaignDTO.getApprovedBy() == null ? null : userRepository.findById(campaignDTO.getApprovedBy())
+        final User approvedBy = campaignDTO.getApprovedById() == null ? null : userRepository.findById(campaignDTO.getApprovedById())
                 .orElseThrow(() -> new NotFoundException("approvedBy not found"));
         campaign.setApprovedBy(approvedBy);
-        final User managedBy = campaignDTO.getManagedBy() == null ? null : userRepository.findById(campaignDTO.getManagedBy())
+        final User managedBy = campaignDTO.getManagedById() == null ? null : userRepository.findById(campaignDTO.getManagedById())
                 .orElseThrow(() -> new NotFoundException("managedBy not found"));
         campaign.setManagedBy(managedBy);
-        final Category category = campaignDTO.getCategory() == null ? null : categoryRepository.findById(campaignDTO.getCategory())
+        final Category category = campaignDTO.getCategoryId() == null ? null : categoryRepository.findById(campaignDTO.getCategoryId())
                 .orElseThrow(() -> new NotFoundException("category not found"));
         campaign.setCategory(category);
     }
