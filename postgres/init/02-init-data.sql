@@ -17,17 +17,17 @@ ON CONFLICT DO NOTHING;
 -- ============================================================
 -- 2. USER
 -- ============================================================
-INSERT INTO "user" (user_id, college_id, student_number, keycloak_id, first_name, last_name, email, phone, academic_year, photo, is_banned, created_at, updated_at) VALUES
+INSERT INTO "user" (user_id, college_id, student_number, keycloak_id, first_name, last_name, email, phone, academic_year, photo, birthdate, location, is_banned, created_at, updated_at) VALUES
 -- طلاب
-(1,  1, 'STU-001', 'kc-user-001', 'ليلى',   'العمري',    'layla.omari@school.edu',      '0501234567', 2, 'https://i.pravatar.cc/400?u=layla.omari@school.edu',      FALSE, '2023-02-01 09:00:00', NULL),
-(2,  2, 'STU-002', 'kc-user-002', 'محمد',   'الزهراني',  'mohammed.zahrani@school.edu', '0502345678', 3, 'https://i.pravatar.cc/400?u=mohammed.zahrani@school.edu', FALSE, '2023-02-02 09:00:00', NULL),
-(3,  3, 'STU-003', 'kc-user-003', 'سارة',   'القحطاني',  'sara.qahtani@school.edu',     '0503456789', 1, 'https://i.pravatar.cc/400?u=sara.qahtani@school.edu',     FALSE, '2023-02-03 09:00:00', NULL),
-(4,  4, 'STU-004', 'kc-user-004', 'خالد',   'الغامدي',   'khalid.ghamdi@school.edu',    '0504567890', 4, 'https://i.pravatar.cc/400?u=khalid.ghamdi@school.edu',    FALSE, '2023-02-04 09:00:00', NULL),
-(5,  5, 'STU-005', 'kc-user-005', 'هند',    'المطيري',   'hind.mutairi@school.edu',     '0505678901', 2, 'https://i.pravatar.cc/400?u=hind.mutairi@school.edu',     TRUE,  '2023-02-05 09:00:00', NULL),
+(1,  1, 'STU-001', 'kc-user-001', 'ليلى',   'العمري',    'layla.omari@school.edu',      '0501234567', 2, 'https://i.pravatar.cc/400?u=layla.omari@school.edu',      '2003-05-12', 'الرياض', FALSE, '2023-02-01 09:00:00', NULL),
+(2,  2, 'STU-002', 'kc-user-002', 'محمد',   'الزهراني',  'mohammed.zahrani@school.edu', '0502345678', 3, 'https://i.pravatar.cc/400?u=mohammed.zahrani@school.edu', '2002-11-21', 'جدة', FALSE, '2023-02-02 09:00:00', NULL),
+(3,  3, 'STU-003', 'kc-user-003', 'سارة',   'القحطاني',  'sara.qahtani@school.edu',     '0503456789', 1, 'https://i.pravatar.cc/400?u=sara.qahtani@school.edu',     '2004-02-08', 'الدمام', FALSE, '2023-02-03 09:00:00', NULL),
+(4,  4, 'STU-004', 'kc-user-004', 'خالد',   'الغامدي',   'khalid.ghamdi@school.edu',    '0504567890', 4, 'https://i.pravatar.cc/400?u=khalid.ghamdi@school.edu',    '2001-09-30', 'مكة', FALSE, '2023-02-04 09:00:00', NULL),
+(5,  5, 'STU-005', 'kc-user-005', 'هند',    'المطيري',   'hind.mutairi@school.edu',     '0505678901', 2, 'https://i.pravatar.cc/400?u=hind.mutairi@school.edu',     '2003-12-14', 'المدينة المنورة', TRUE,  '2023-02-05 09:00:00', NULL),
 -- مشرفون ومديرون
-(6,  1, NULL, 'kc-admin-001',   'عمر',    'المشرف',    'omar.admin@school.edu',       '0506789012', NULL, 'https://i.pravatar.cc/400?u=omar.admin@school.edu',       FALSE, '2023-01-15 09:00:00', NULL),
-(7,  2, NULL, 'kc-manager-001', 'فاطمة',  'المديرة',   'fatima.manager@school.edu',   '0507890123', NULL, 'https://i.pravatar.cc/400?u=fatima.manager@school.edu',   FALSE, '2023-01-16 09:00:00', NULL),
-(8,  3, NULL, 'kc-admin-002',   'أحمد',   'المشرف',    'ahmed.admin@school.edu',      '0508901234', NULL, 'https://i.pravatar.cc/400?u=ahmed.admin@school.edu',      FALSE, '2023-01-17 09:00:00', NULL)
+(6,  1, NULL, 'kc-admin-001',   'عمر',    'المشرف',    'omar.admin@school.edu',       '0506789012', NULL, 'https://i.pravatar.cc/400?u=omar.admin@school.edu',       '1990-07-05', 'الرياض', FALSE, '2023-01-15 09:00:00', NULL),
+(7,  2, NULL, 'kc-manager-001', 'فاطمة',  'المديرة',   'fatima.manager@school.edu',   '0507890123', NULL, 'https://i.pravatar.cc/400?u=fatima.manager@school.edu',   '1988-03-18', 'جدة', FALSE, '2023-01-16 09:00:00', NULL),
+(8,  3, NULL, 'kc-admin-002',   'أحمد',   'المشرف',    'ahmed.admin@school.edu',      '0508901234', NULL, 'https://i.pravatar.cc/400?u=ahmed.admin@school.edu',      '1991-10-22', 'الدمام', FALSE, '2023-01-17 09:00:00', NULL)
 ON CONFLICT DO NOTHING;
 
 -- ============================================================

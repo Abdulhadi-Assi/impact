@@ -2,8 +2,8 @@ package com.uni.impact.security;
 
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import com.uni.impact.user.User;
-import com.uni.impact.user.UserDTO;
+import com.uni.impact.user.dto.UserRequestDTO;
+import com.uni.impact.user.dto.UserResponseDTO;
 import com.uni.impact.user.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -15,7 +15,6 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
-import java.util.Optional;
 
 @Component
 @Slf4j
@@ -42,19 +41,15 @@ public class KeycloakUserSyncFilter extends OncePerRequestFilter {
             return;
         }
 
-        UserDTO userDTO = getUserDetails(token);
+        UserRequestDTO userDTO = getUserDetails(token);
         if(userDTO != null)
         {
-
-            Optional<User> useroptional = userService.findUserByEmail(userDTO.getEmail());
-            boolean userExists = (useroptional.isPresent());
-
-            User user;
-            if (!userExists) {
+            UserResponseDTO user;
+            if (userService.findUserByEmail(userDTO.getEmail()).isEmpty()) {
                 user = userService.create(userDTO);
                 log.info("User registered successfully");
             } else {
-                user = useroptional.get();
+                user = userService.findDtoByEmail(userDTO.getEmail());
                 log.info("User already exists, skipping sync");
             }
 
@@ -71,7 +66,7 @@ public class KeycloakUserSyncFilter extends OncePerRequestFilter {
                path.startsWith("/webhook/");
     }
 
-    private UserDTO getUserDetails(String token) {
+    private UserRequestDTO getUserDetails(String token) {
         if (token == null) return null;
 
         try {
@@ -79,11 +74,15 @@ public class KeycloakUserSyncFilter extends OncePerRequestFilter {
             SignedJWT signedJWT = SignedJWT.parse(tokenWithoutBearer);
             JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
 
-            UserDTO userDTO = new UserDTO();
+            UserRequestDTO userDTO = new UserRequestDTO();
             userDTO.setEmail(claims.getStringClaim("email"));
             userDTO.setKeycloakId(claims.getStringClaim("sub"));
             userDTO.setFirstName(claims.getStringClaim("given_name"));
             userDTO.setLastName(claims.getStringClaim("family_name"));
+            if (userDTO.getEmail() == null || userDTO.getFirstName() == null || userDTO.getLastName() == null) {
+                log.debug("Token missing user claims (email/given_name/family_name) - skipping user sync");
+                return null;
+            }
             return userDTO;
         } catch (Exception e) {
             log.error("Error parsing JWT token", e);

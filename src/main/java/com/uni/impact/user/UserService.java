@@ -2,6 +2,8 @@ package com.uni.impact.user;
 
 import com.uni.impact.college.College;
 import com.uni.impact.college.CollegeRepository;
+import com.uni.impact.user.dto.UserRequestDTO;
+import com.uni.impact.user.dto.UserResponseDTO;
 import com.uni.impact.util.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,27 +21,36 @@ public class UserService {
     private final CollegeRepository collegeRepository;
     private final UserMapper userMapper;
 
-    public Page<User> findAll(Pageable pageable) {
-        return userRepository.findAll(pageable);
-    }
-
+    @Transactional(readOnly = true)
     public User findById(final Long userId) {
         return userRepository.findById(userId).orElseThrow(NotFoundException::new);
     }
 
+    @Transactional(readOnly = true)
     public User findByEmail(final String email) {
         return userRepository.findByEmailIgnoreCase(email).orElseThrow(NotFoundException::new);
     }
     public Optional<User> findUserByEmail(String email) {
-        return userRepository.findByEmail(email);
+        return userRepository.findByEmailIgnoreCase(email);
     }
 
+    @Transactional(readOnly = true)
+    public Page<UserResponseDTO> findAll(Pageable pageable) {
+        return userRepository.findAll(pageable).map(userMapper::toResponseDto);
+    }
+
+    @Transactional(readOnly = true)
+    public UserResponseDTO findDtoById(final Long userId) {
+        return userMapper.toResponseDto(findById(userId));
+    }
+
+    @Transactional(readOnly = true)
+    public UserResponseDTO findDtoByEmail(final String email) {
+        return userMapper.toResponseDto(findByEmail(email));
+    }
 
     @Transactional
-    public User create(final UserDTO userDTO) {
-        if (userDTO.getUserId() != null) {
-            throw new IllegalArgumentException("A new user cannot already have an ID");
-        }
+    public UserResponseDTO create(final UserRequestDTO userDTO) {
         if (emailExists(userDTO.getEmail())) {
             throw new IllegalArgumentException("Email already exists");
         }
@@ -48,16 +59,16 @@ public class UserService {
             user.setPhoto("https://i.pravatar.cc/400?u=" + userDTO.getEmail());
         }
         applyRelations(user, userDTO);
-        return userRepository.save(user);
+        return userMapper.toResponseDto(userRepository.save(user));
     }
 
     @Transactional
-    public User update(final Long userId, final UserDTO userDTO) {
+    public UserResponseDTO update(final Long userId, final UserRequestDTO userDTO) {
 
         User user = userRepository.findById(userId).orElseThrow(NotFoundException::new);
         userMapper.updateEntity(user, userDTO);
         applyRelations(user, userDTO);
-        return userRepository.save(user);
+        return userMapper.toResponseDto(userRepository.save(user));
     }
 
     @Transactional
@@ -66,8 +77,8 @@ public class UserService {
         userRepository.delete(user);
     }
 
-    private void applyRelations(final User user, final UserDTO userDTO) {
-        final College college = userDTO.getCollege() == null ? null : collegeRepository.findById(userDTO.getCollege())
+    private void applyRelations(final User user, final UserRequestDTO userDTO) {
+        final College college = userDTO.getCollegeId() == null ? null : collegeRepository.findById(userDTO.getCollegeId())
                 .orElseThrow(() -> new NotFoundException("college not found"));
         user.setCollege(college);
     }
@@ -76,9 +87,9 @@ public class UserService {
     }
 
     @Transactional
-    public User toggleBan(Long id) {
+    public UserResponseDTO toggleBan(Long id) {
         User user = userRepository.findById(id).orElseThrow(NotFoundException::new);
         user.setIsBanned(!user.getIsBanned());
-        return userRepository.save(user);
+        return userMapper.toResponseDto(userRepository.save(user));
     }
 }

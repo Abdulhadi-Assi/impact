@@ -27,6 +27,8 @@ CREATE TABLE IF NOT EXISTS "user" (
     phone          VARCHAR(30),
     academic_year  SMALLINT,
     photo          VARCHAR(500),
+    birthdate      DATE,
+    location       VARCHAR(255),
     is_banned      BOOLEAN      NOT NULL DEFAULT FALSE,
     created_at     TIMESTAMP    NOT NULL DEFAULT NOW(),
     updated_at     TIMESTAMP
