@@ -27,7 +27,8 @@ public class CampaignSpecification {
 
             if (criteria.getCategoryId() != null) {
                 Join<Object, Object> categoryJoin = root.join("category");
-                predicate = cb.and(predicate, cb.equal(categoryJoin.get("campaignId"), criteria.getCategoryId()));
+                // category entity has 'categoryId' as its identifier - compare against that
+                predicate = cb.and(predicate, cb.equal(categoryJoin.get("categoryId"), criteria.getCategoryId()));
             }
 
             if (criteria.getCollegeId() != null) {
@@ -81,8 +82,9 @@ public class CampaignSpecification {
             Predicate predicate = criteriaBuilder.conjunction();
             if (categoryId != null) {
                 Join<Object, Object> categoryJoin = root.join("category");
+                // compare to categoryId on the joined Category
                 predicate = criteriaBuilder.and(predicate,
-                    criteriaBuilder.equal(categoryJoin.get("campaignId"), categoryId));
+                    criteriaBuilder.equal(categoryJoin.get("categoryId"), categoryId));
             }
             return predicate;
         };
