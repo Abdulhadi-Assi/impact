@@ -63,7 +63,8 @@ public class KeycloakUserSyncFilter extends OncePerRequestFilter {
     private boolean isPermittedEndpoint(String path) {
         return path.startsWith("/swagger-ui/") || path.equals("/swagger-ui") ||
                path.startsWith("/v3/api-docs/") || path.equals("/v3/api-docs")||
-               path.startsWith("/webhook/");
+               path.startsWith("/webhook/") ||
+               path.startsWith("/uploads/");
     }
 
     private UserRequestDTO getUserDetails(String token) {
