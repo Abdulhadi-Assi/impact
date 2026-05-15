@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,8 +30,15 @@ public class CampaignController {
         return ResponseEntity.ok(campaignService.findDtoById(id));
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CampaignResponseDTO> create(@Valid @RequestBody CampaignRequestDTO campaignDTO) {
+        CampaignResponseDTO created = campaignService.create(campaignDTO);
+        return ResponseEntity.created(URI.create("/api/v1/campaigns/" + created.getCampaignId()))
+                .body(created);
+    }
+
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<CampaignResponseDTO> createMultipart(@Valid @ModelAttribute CampaignRequestDTO campaignDTO) {
         CampaignResponseDTO created = campaignService.create(campaignDTO);
         return ResponseEntity.created(URI.create("/api/v1/campaigns/" + created.getCampaignId()))
                 .body(created);

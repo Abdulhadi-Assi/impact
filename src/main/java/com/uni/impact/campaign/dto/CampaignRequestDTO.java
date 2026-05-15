@@ -1,6 +1,7 @@
 package com.uni.impact.campaign.dto;
 
 import com.uni.impact.campaign.CampaignStatus;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -8,6 +9,8 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -30,6 +33,9 @@ public class CampaignRequestDTO {
 
     @Size(max = 500)
     private String photo;
+
+    @Schema(type = "string", format = "binary", description = "Campaign profile photo file")
+    private MultipartFile photoFile;
 
     @NotNull
     private CampaignStatus status;

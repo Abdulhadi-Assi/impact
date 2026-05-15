@@ -12,8 +12,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +31,9 @@ public class CampaignService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final CampaignMapper campaignMapper;
+
+    @Value("${app.upload.dir:uploads/photos}")
+    private String uploadDir;
 
     @Transactional(readOnly = true)
     public Page<CampaignResponseDTO> findAll(Pageable pageable) {
@@ -78,6 +89,7 @@ public class CampaignService {
     @Transactional
     public CampaignResponseDTO create(final CampaignRequestDTO campaignDTO) {
         Campaign campaign = campaignMapper.toEntity(campaignDTO);
+        applyPhoto(campaign, campaignDTO);
         applyRelations(campaign, campaignDTO);
         return campaignMapper.toResponseDto(campaignRepository.save(campaign));
     }
@@ -87,6 +99,7 @@ public class CampaignService {
         Campaign campaign = campaignRepository.findById(campaignId)
                 .orElseThrow(NotFoundException::new);
         campaignMapper.updateEntity(campaign, campaignDTO);
+        applyPhoto(campaign, campaignDTO);
         applyRelations(campaign, campaignDTO);
         return campaignMapper.toResponseDto(campaignRepository.save(campaign));
     }
@@ -115,5 +128,32 @@ public class CampaignService {
         final Category category = campaignDTO.getCategoryId() == null ? null : categoryRepository.findById(campaignDTO.getCategoryId())
                 .orElseThrow(() -> new NotFoundException("category not found"));
         campaign.setCategory(category);
+    }
+
+    private void applyPhoto(final Campaign campaign, final CampaignRequestDTO campaignDTO) {
+        MultipartFile photoFile = campaignDTO.getPhotoFile();
+        if (photoFile != null && !photoFile.isEmpty()) {
+            campaign.setPhoto(storePhoto(photoFile));
+        }
+    }
+
+    private String storePhoto(final MultipartFile photoFile) {
+        if (photoFile == null || photoFile.isEmpty()) {
+            throw new IllegalArgumentException("Photo file cannot be empty");
+        }
+
+        try {
+            Path uploadPath = Paths.get(uploadDir);
+            Files.createDirectories(uploadPath);
+
+            String originalName = photoFile.getOriginalFilename() == null
+                    ? "campaign-photo"
+                    : Paths.get(photoFile.getOriginalFilename()).getFileName().toString();
+            String filename = UUID.randomUUID() + "_" + originalName;
+            Files.write(uploadPath.resolve(filename), photoFile.getBytes());
+            return "/uploads/photos/" + filename;
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to upload campaign photo", e);
+        }
     }
 }
