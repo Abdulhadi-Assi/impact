@@ -27,12 +27,16 @@ CREATE TABLE IF NOT EXISTS "user" (
     phone          VARCHAR(30),
     academic_year  SMALLINT,
     photo          VARCHAR(500),
+    description    TEXT,
     birthdate      DATE,
     location       VARCHAR(255),
     is_banned      BOOLEAN      NOT NULL DEFAULT FALSE,
     created_at     TIMESTAMP    NOT NULL DEFAULT NOW(),
     updated_at     TIMESTAMP
 );
+
+ALTER TABLE IF EXISTS "user"
+    ADD COLUMN IF NOT EXISTS description TEXT;
 
 -- ============================================================
 -- 3. CATEGORY

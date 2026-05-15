@@ -55,6 +55,9 @@ public class User {
     private String photo;
 
     @Column
+    private String description;
+
+    @Column
     private LocalDate birthdate;
 
     @Column

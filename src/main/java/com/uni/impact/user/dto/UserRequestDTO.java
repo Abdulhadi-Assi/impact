@@ -1,6 +1,7 @@
 package com.uni.impact.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -8,6 +9,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -37,8 +40,11 @@ public class UserRequestDTO {
 
     private Integer academicYear;
 
-    @Size(max = 500)
-    private String photo;
+    @Size(max = 1000)
+    private String description;
+
+    @Schema(type = "string", format = "binary")
+    private MultipartFile photoFile;
 
     @JsonProperty("isBanned")
     private Boolean isBanned;

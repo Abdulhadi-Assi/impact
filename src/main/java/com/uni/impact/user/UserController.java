@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -44,9 +45,26 @@ public class UserController {
                 .body(created);
     }
 
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<UserResponseDTO> createMultipart(@Valid @ModelAttribute UserRequestDTO userDTO) {
+        UserResponseDTO created = userService.create(userDTO);
+        return ResponseEntity.created(URI.create("/api/v1/users/" + created.getUserId()))
+                .body(created);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<UserResponseDTO> update(@PathVariable Long id, @RequestBody @Valid final UserRequestDTO userDTO) {
         return ResponseEntity.ok(userService.update(id, userDTO));
+    }
+
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<UserResponseDTO> updateMultipart(@PathVariable Long id, @Valid @ModelAttribute final UserRequestDTO userDTO) {
+        return ResponseEntity.ok(userService.update(id, userDTO));
+    }
+
+    @PatchMapping(value = "/{id}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<UserResponseDTO> updatePhoto(@PathVariable Long id, @RequestPart("file") org.springframework.web.multipart.MultipartFile file) {
+        return ResponseEntity.ok(userService.updatePhoto(id, file));
     }
 
     @DeleteMapping("/{id}")

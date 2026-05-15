@@ -20,6 +20,7 @@ public class UserResponseDTO {
     private String phone;
     private Integer academicYear;
     private String photo;
+    private String description;
 
     @JsonProperty("isBanned")
     private Boolean isBanned;

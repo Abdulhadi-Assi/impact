@@ -39,10 +39,10 @@ public class Campaign {
     @Column
     private String location;
 
-    @Column(nullable = false)
+    @Column
     private LocalDate startDate;
 
-    @Column(nullable = false)
+    @Column
     private LocalDate endDate;
 
     @Column

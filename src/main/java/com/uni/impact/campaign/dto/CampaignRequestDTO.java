@@ -22,10 +22,8 @@ public class CampaignRequestDTO {
     @Size(max = 255)
     private String location;
 
-    @NotNull
     private LocalDate startDate;
 
-    @NotNull
     private LocalDate endDate;
 
     private Integer maxVolunteers;
