@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
 
@@ -46,7 +47,12 @@ public class UserController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<UserResponseDTO> createMultipart(@Valid @ModelAttribute UserRequestDTO userDTO) {
+    public ResponseEntity<UserResponseDTO> createMultipart(
+            @Valid @ModelAttribute UserRequestDTO userDTO,
+            @RequestPart(value = "photo", required = false) MultipartFile photo,
+            @RequestPart(value = "file", required = false) MultipartFile file,
+            @RequestPart(value = "photoFile", required = false) MultipartFile photoFile) {
+        userDTO.setPhotoFile(resolvePhotoFile(userDTO.getPhotoFile(), photoFile, photo, file));
         UserResponseDTO created = userService.create(userDTO);
         return ResponseEntity.created(URI.create("/api/v1/users/" + created.getUserId()))
                 .body(created);
@@ -58,13 +64,35 @@ public class UserController {
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<UserResponseDTO> updateMultipart(@PathVariable Long id, @Valid @ModelAttribute final UserRequestDTO userDTO) {
+    public ResponseEntity<UserResponseDTO> updateMultipart(
+            @PathVariable Long id,
+            @Valid @ModelAttribute final UserRequestDTO userDTO,
+            @RequestPart(value = "photo", required = false) MultipartFile photo,
+            @RequestPart(value = "file", required = false) MultipartFile file,
+            @RequestPart(value = "photoFile", required = false) MultipartFile photoFile) {
+        userDTO.setPhotoFile(resolvePhotoFile(userDTO.getPhotoFile(), photoFile, photo, file));
         return ResponseEntity.ok(userService.update(id, userDTO));
     }
 
     @PatchMapping(value = "/{id}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<UserResponseDTO> updatePhoto(@PathVariable Long id, @RequestPart("file") org.springframework.web.multipart.MultipartFile file) {
-        return ResponseEntity.ok(userService.updatePhoto(id, file));
+    public ResponseEntity<UserResponseDTO> updatePhoto(
+            @PathVariable Long id,
+            @RequestPart(value = "file", required = false) MultipartFile file,
+            @RequestPart(value = "photo", required = false) MultipartFile photo,
+            @RequestPart(value = "photoFile", required = false) MultipartFile photoFile) {
+        return ResponseEntity.ok(userService.updatePhoto(id, resolvePhotoFile(null, photoFile, photo, file)));
+    }
+
+    private MultipartFile resolvePhotoFile(MultipartFile... candidates) {
+        if (candidates == null) {
+            return null;
+        }
+        for (MultipartFile candidate : candidates) {
+            if (candidate != null && !candidate.isEmpty()) {
+                return candidate;
+            }
+        }
+        return null;
     }
 
     @DeleteMapping("/{id}")
