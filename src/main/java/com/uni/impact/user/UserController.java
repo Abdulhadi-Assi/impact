@@ -1,6 +1,11 @@
 package com.uni.impact.user;
 
+import com.uni.impact.application.ApplicationService;
+import com.uni.impact.application.ApplicationStatus;
 import com.uni.impact.attendance.AttendanceService;
+import com.uni.impact.campaign.CampaignStatus;
+import com.uni.impact.user.dto.UserApplicationsResponse;
+import com.uni.impact.user.dto.UserAttendedCampaignsResponse;
 import com.uni.impact.user.dto.UserRequestDTO;
 import com.uni.impact.user.dto.UserResponseDTO;
 import jakarta.validation.Valid;
@@ -23,6 +28,7 @@ public class UserController {
 
     private final UserService userService;
     private final AttendanceService attendanceService;
+    private final ApplicationService applicationService;
 
     @GetMapping
     public ResponseEntity<Page<UserResponseDTO>> findAll(Pageable pageable) {
@@ -112,4 +118,30 @@ public class UserController {
         return ResponseEntity.ok(hours);
     }
 
+    // GET /api/v1/users/{id}/attended-campaigns
+    //   Returns all campaigns the user has attended, with per-campaign days/hours
+    //   plus overall totals (totalCampaigns, totalHours).
+    //   ?searchText=  search in campaign title
+    //   &status=      filter by campaign status (PENDING/APPROVED/ONGOING/COMPLETED/REJECTED)
+    //   &page=&size=&sort=
+    @GetMapping("/{id}/attended-campaigns")
+    public ResponseEntity<UserAttendedCampaignsResponse> getAttendedCampaigns(
+            @PathVariable Long id,
+            @RequestParam(required = false) String searchText,
+            @RequestParam(required = false) CampaignStatus status,
+            Pageable pageable) {
+        return ResponseEntity.ok(userService.getAttendedCampaigns(id, searchText, status, pageable));
+    }
+
+    // GET /api/v1/users/{id}/applications
+    //   Returns all applications by the user, with status counts (total/pending/approved/rejected/withdrawn/cancelled).
+    //   ?status=  filter by application status
+    //   &page=&size=&sort=
+    @GetMapping("/{id}/applications")
+    public ResponseEntity<UserApplicationsResponse> getUserApplications(
+            @PathVariable Long id,
+            @RequestParam(required = false) ApplicationStatus status,
+            Pageable pageable) {
+        return ResponseEntity.ok(applicationService.getUserApplications(id, status, pageable));
+    }
 }

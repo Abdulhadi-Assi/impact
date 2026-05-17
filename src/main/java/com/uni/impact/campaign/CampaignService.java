@@ -169,8 +169,9 @@ public class CampaignService {
         if (single != null && !single.isEmpty()) {
             out.add(single);
         }
-        if (dto.getPhotoFiles() != null) {
-            for (MultipartFile f : dto.getPhotoFiles()) {
+        MultipartFile[] files = dto.getPhotoFiles();
+        if (files != null) {
+            for (MultipartFile f : files) {
                 if (f != null && !f.isEmpty()) {
                     out.add(f);
                 }

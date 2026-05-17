@@ -27,6 +27,9 @@ public interface CampaignMapper {
     @Mapping(target = "progressPhotos", source = "campaignProgresses")
     CampaignResponseDTO toResponseDto(Campaign entity);
 
+    @Mapping(target = "campaignId", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "proposedBy", ignore = true)
     @Mapping(target = "approvedBy", ignore = true)
     @Mapping(target = "managedBy", ignore = true)
@@ -38,6 +41,9 @@ public interface CampaignMapper {
     @Mapping(target = "photo", ignore = true)
     Campaign toEntity(CampaignRequestDTO dto);
 
+    @Mapping(target = "campaignId", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "proposedBy", ignore = true)
     @Mapping(target = "approvedBy", ignore = true)
     @Mapping(target = "managedBy", ignore = true)

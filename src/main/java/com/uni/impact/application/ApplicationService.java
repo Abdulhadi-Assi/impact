@@ -1,11 +1,12 @@
 package com.uni.impact.application;
 
+import com.uni.impact.application.dto.VolunteerSearchCriteria;
 import com.uni.impact.campaign.Campaign;
 import com.uni.impact.campaign.CampaignRepository;
 import com.uni.impact.user.User;
 import com.uni.impact.user.UserRepository;
+import com.uni.impact.user.dto.UserApplicationsResponse;
 import com.uni.impact.util.NotFoundException;
-import com.uni.impact.application.dto.VolunteerSearchCriteria;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +27,32 @@ public class ApplicationService {
     public Page<ApplicationResponseDTO> findByStudentEmailAsResponse(final String email, Pageable pageable) {
         final User user = userRepository.findByEmailIgnoreCase(email).orElseThrow(NotFoundException::new);
         return applicationRepository.findByStudentUserId(user.getUserId(), pageable).map(applicationMapper::toResponseDto);
+    }
+
+    @Transactional(readOnly = true)
+    public UserApplicationsResponse getUserApplications(
+            final Long userId, final ApplicationStatus status, Pageable pageable) {
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException("user not found");
+        }
+        Page<ApplicationResponseDTO> page = (status == null
+                ? applicationRepository.findByStudentUserId(userId, pageable)
+                : applicationRepository.findByStudentUserIdAndStatus(userId, status, pageable))
+                .map(applicationMapper::toResponseDto);
+
+        long total = 0, pending = 0, approved = 0, rejected = 0, withdrawn = 0, cancelled = 0;
+        for (ApplicationRepository.StatusCountProjection p : applicationRepository.countByStudentGroupedByStatus(userId)) {
+            long c = p.getCount() == null ? 0 : p.getCount();
+            total += c;
+            switch (p.getStatus()) {
+                case PENDING -> pending = c;
+                case APPROVED -> approved = c;
+                case REJECTED -> rejected = c;
+                case WITHDRAWN -> withdrawn = c;
+                case CANCELLED -> cancelled = c;
+            }
+        }
+        return new UserApplicationsResponse(total, pending, approved, rejected, withdrawn, cancelled, page);
     }
 
     @Transactional(readOnly = true)

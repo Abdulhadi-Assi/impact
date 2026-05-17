@@ -1,7 +1,11 @@
 package com.uni.impact.user;
 
+import com.uni.impact.attendance.AttendanceRepository;
+import com.uni.impact.campaign.CampaignStatus;
 import com.uni.impact.college.College;
 import com.uni.impact.college.CollegeRepository;
+import com.uni.impact.user.dto.UserAttendedCampaignDTO;
+import com.uni.impact.user.dto.UserAttendedCampaignsResponse;
 import com.uni.impact.user.dto.UserRequestDTO;
 import com.uni.impact.user.dto.UserResponseDTO;
 import com.uni.impact.util.NotFoundException;
@@ -27,6 +31,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final CollegeRepository collegeRepository;
     private final UserMapper userMapper;
+    private final AttendanceRepository attendanceRepository;
 
     @Value("${app.upload.dir:uploads/photos}")
     private String uploadDir;
@@ -138,5 +143,22 @@ public class UserService {
         User user = userRepository.findById(id).orElseThrow(NotFoundException::new);
         user.setIsBanned(!user.getIsBanned());
         return userMapper.toResponseDto(userRepository.save(user));
+    }
+
+    @Transactional(readOnly = true)
+    public UserAttendedCampaignsResponse getAttendedCampaigns(
+            final Long userId,
+            final String searchText,
+            final CampaignStatus status,
+            final Pageable pageable) {
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException("user not found");
+        }
+        String search = (searchText == null) ? "" : searchText.trim();
+        Page<UserAttendedCampaignDTO> page =
+                attendanceRepository.findAttendedCampaignsByUser(userId, search, status, pageable);
+        long totalCampaigns = attendanceRepository.countDistinctCampaignsByUser(userId);
+        double totalHours = attendanceRepository.sumHoursByUser(userId);
+        return new UserAttendedCampaignsResponse(totalCampaigns, totalHours, page);
     }
 }
