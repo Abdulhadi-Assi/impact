@@ -34,6 +34,12 @@ public class ApplicationService {
         return applicationRepository.findAll(spec, pageable).map(applicationMapper::toResponseDto);
     }
 
+    @Transactional(readOnly = true)
+    public Page<CampaignStudentDTO> searchCampaignStudents(VolunteerSearchCriteria criteria, Pageable pageable) {
+        Specification<Application> spec = VolunteerSpecification.withSearchCriteria(criteria);
+        return applicationRepository.findAll(spec, pageable).map(applicationMapper::toCampaignStudentDto);
+    }
+
     public Application findById(final Long id) {
         return applicationRepository.findById(id)
                 .orElseThrow(NotFoundException::new);

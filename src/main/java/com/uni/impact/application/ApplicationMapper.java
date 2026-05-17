@@ -28,6 +28,24 @@ public interface ApplicationMapper {
     @Mapping(target = "removedByName", source = "removedBy", qualifiedByName = "fullName")
     ApplicationResponseDTO toResponseDto(Application entity);
 
+    @Mapping(target = "userId", source = "student.userId")
+    @Mapping(target = "studentNumber", source = "student.studentNumber")
+    @Mapping(target = "fullName", source = "student", qualifiedByName = "fullName")
+    @Mapping(target = "firstName", source = "student.firstName")
+    @Mapping(target = "lastName", source = "student.lastName")
+    @Mapping(target = "email", source = "student.email")
+    @Mapping(target = "phone", source = "student.phone")
+    @Mapping(target = "academicYear", source = "student.academicYear")
+    @Mapping(target = "photo", source = "student.photo")
+    @Mapping(target = "description", source = "student.description")
+    @Mapping(target = "birthdate", source = "student.birthdate")
+    @Mapping(target = "location", source = "student.location")
+    @Mapping(target = "collegeName", source = "student.college.name")
+    @Mapping(target = "applicationId", source = "id")
+    @Mapping(target = "applicationStatus", source = "status")
+    @Mapping(target = "reviewedByName", source = "reviewedBy", qualifiedByName = "fullName")
+    CampaignStudentDTO toCampaignStudentDto(Application entity);
+
     @Mapping(target = "student", ignore = true)
     @Mapping(target = "campaign", ignore = true)
     @Mapping(target = "reviewedBy", ignore = true)
