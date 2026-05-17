@@ -21,16 +21,23 @@ public class ProgressService {
     private final UserRepository userRepository;
     private final ProgressMapper progressMapper;
 
-    public Page<Progress> findAll(Pageable pageable) {
-        return progressRepository.findAll(pageable);
+    @Transactional(readOnly = true)
+    public Page<ProgressResponseDTO> findAllAsResponse(Pageable pageable) {
+        return progressRepository.findAll(pageable).map(progressMapper::toResponseDto);
     }
 
     public Progress findById(final Long progressId) {
         return progressRepository.findById(progressId).orElseThrow(NotFoundException::new);
     }
 
-    public Page<Progress> findByCampaign(final Long campaignId, Pageable pageable) {
-        return progressRepository.findByCampaignCampaignId(campaignId, pageable);
+    @Transactional(readOnly = true)
+    public ProgressResponseDTO findByIdAsResponse(final Long progressId) {
+        return progressMapper.toResponseDto(findById(progressId));
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ProgressResponseDTO> findByCampaignAsResponse(final Long campaignId, Pageable pageable) {
+        return progressRepository.findByCampaignCampaignId(campaignId, pageable).map(progressMapper::toResponseDto);
     }
 
     @Transactional

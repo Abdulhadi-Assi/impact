@@ -10,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.net.URI;
 
 @RestController
@@ -38,7 +37,8 @@ public class CampaignController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<CampaignResponseDTO> createMultipart(@Valid @ModelAttribute CampaignRequestDTO campaignDTO) {
+    public ResponseEntity<CampaignResponseDTO> createMultipart(
+            @Valid @ModelAttribute CampaignRequestDTO campaignDTO) {
         CampaignResponseDTO created = campaignService.create(campaignDTO);
         return ResponseEntity.created(URI.create("/api/v1/campaigns/" + created.getCampaignId()))
                 .body(created);
@@ -46,6 +46,13 @@ public class CampaignController {
 
     @PutMapping("/{id}")
     public ResponseEntity<CampaignResponseDTO> update(@PathVariable Long id, @RequestBody @Valid final CampaignRequestDTO campaignDTO) {
+        return ResponseEntity.ok(campaignService.update(id, campaignDTO));
+    }
+
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<CampaignResponseDTO> updateMultipart(
+            @PathVariable Long id,
+            @Valid @ModelAttribute CampaignRequestDTO campaignDTO) {
         return ResponseEntity.ok(campaignService.update(id, campaignDTO));
     }
 

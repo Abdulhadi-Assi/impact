@@ -8,6 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ApplicationRepository extends JpaRepository<Application, Long>, JpaSpecificationExecutor<Application> {
-	Page<Application> findByCampaignCampaignId(Long campaignId, Pageable pageable);
 	Page<Application> findByStudentUserId(Long userId, Pageable pageable);
 }

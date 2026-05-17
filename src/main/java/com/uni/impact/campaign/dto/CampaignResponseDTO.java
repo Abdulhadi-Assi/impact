@@ -1,6 +1,6 @@
 package com.uni.impact.campaign.dto;
 
-import com.uni.impact.progress.ProgressDTO;
+import com.uni.impact.progress.ProgressResponseDTO;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,21 +24,16 @@ public class CampaignResponseDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    private Long proposedById;
-    private Long approvedById;
-    private Long managedById;
+    private String proposedByName;
+    private String approvedByName;
+    private String managedByName;
     private String category;
 
-    private Long collegeId;
     private String collegeName;
 
-    private ProgressDTO lastProgress;
-    private String photo;  // Campaign profile photo
-    private List<String> progressPhotos;  // Photos from all progress updates
+    private ProgressResponseDTO lastProgress;
+
+    private String photo;
+    private List<String> photos;
+    private List<String> progressPhotos;
 }
-
-
-
-
-
-

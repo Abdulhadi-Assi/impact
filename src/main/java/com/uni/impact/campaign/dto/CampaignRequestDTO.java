@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,8 +35,12 @@ public class CampaignRequestDTO {
     @Size(max = 500)
     private String photo;
 
-    @Schema(type = "string", format = "binary", description = "Campaign profile photo file")
+    @Schema(type = "string", format = "binary", description = "Campaign profile photo file (single)")
     private MultipartFile photoFile;
+
+    @Schema(type = "array", description = "Multiple campaign profile photo files",
+            implementation = MultipartFile.class)
+    private List<MultipartFile> photoFiles;
 
     @NotNull
     private CampaignStatus status;
@@ -52,4 +57,3 @@ public class CampaignRequestDTO {
     @NotNull
     private Long categoryId;
 }
-

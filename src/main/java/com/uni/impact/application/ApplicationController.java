@@ -19,69 +19,66 @@ import com.uni.impact.application.dto.VolunteerSearchCriteria;
 public class ApplicationController {
 
     private final ApplicationService applicationService;
-    private final ApplicationMapper applicationMapper;
     private final UserRepository userRepository;
 
     @GetMapping
-    public ResponseEntity<Page<ApplicationDTO>> findAll(@ModelAttribute VolunteerSearchCriteria criteria, Pageable pageable) {
-        Page<Application> applications = applicationService.searchVolunteers(criteria, pageable);
-        return ResponseEntity.ok(applications.map(applicationMapper::toDto));
+    public ResponseEntity<Page<ApplicationResponseDTO>> findAll(@ModelAttribute VolunteerSearchCriteria criteria, Pageable pageable) {
+        return ResponseEntity.ok(applicationService.searchVolunteersAsResponse(criteria, pageable));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApplicationDTO> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(applicationMapper.toDto(applicationService.findById(id)));
+    public ResponseEntity<ApplicationResponseDTO> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(applicationService.findByIdAsResponse(id));
     }
 
     @PostMapping
-    public ResponseEntity<ApplicationDTO> create(@Valid @RequestBody ApplicationDTO applicationDTO) {
+    public ResponseEntity<ApplicationResponseDTO> create(@Valid @RequestBody ApplicationDTO applicationDTO) {
         Application created = applicationService.create(applicationDTO);
         return ResponseEntity
                 .created(URI.create("/api/v1/applications/" + created.getId()))
-                .body(applicationMapper.toDto(created));
+                .body(applicationService.findByIdAsResponse(created.getId()));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApplicationDTO> update(
+    public ResponseEntity<ApplicationResponseDTO> update(
             @PathVariable Long id,
             @RequestBody @Valid final ApplicationDTO applicationDTO) {
         applicationService.update(id, applicationDTO);
-        return ResponseEntity.ok(applicationMapper.toDto(applicationService.findById(id)));
+        return ResponseEntity.ok(applicationService.findByIdAsResponse(id));
     }
 
     @GetMapping("/me")
-    public ResponseEntity<Page<ApplicationDTO>> myApplications(
+    public ResponseEntity<Page<ApplicationResponseDTO>> myApplications(
             Pageable pageable,
             @AuthenticationPrincipal Jwt jwt) {
         String email = jwt == null ? null : jwt.getClaimAsString("email");
-        return ResponseEntity.ok(applicationService.findByStudentEmail(email, pageable).map(applicationMapper::toDto));
+        return ResponseEntity.ok(applicationService.findByStudentEmailAsResponse(email, pageable));
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<ApplicationDTO> changeStatus(@PathVariable Long id, @RequestBody final ApplicationDTO applicationDTO) {
+    public ResponseEntity<ApplicationResponseDTO> changeStatus(@PathVariable Long id, @RequestBody final ApplicationDTO applicationDTO) {
         applicationService.changeStatus(id, applicationDTO.getStatus(), null, applicationDTO.getRejectionReason());
-        return ResponseEntity.ok(applicationMapper.toDto(applicationService.findById(id)));
+        return ResponseEntity.ok(applicationService.findByIdAsResponse(id));
     }
 
     @PatchMapping("/{id}/withdraw")
-    public ResponseEntity<ApplicationDTO> withdraw(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
+    public ResponseEntity<ApplicationResponseDTO> withdraw(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
         String email = jwt == null ? null : jwt.getClaimAsString("email");
         final com.uni.impact.user.User user = userRepository.findByEmailIgnoreCase(email).orElseThrow(() -> new RuntimeException("user not found"));
         applicationService.withdraw(id, user.getUserId());
-        return ResponseEntity.ok(applicationMapper.toDto(applicationService.findById(id)));
+        return ResponseEntity.ok(applicationService.findByIdAsResponse(id));
     }
 
     @PatchMapping("/{id}/remove")
-    public ResponseEntity<ApplicationDTO> remove(@PathVariable Long id, @RequestBody final ApplicationDTO applicationDTO,
+    public ResponseEntity<ApplicationResponseDTO> remove(@PathVariable Long id, @RequestBody final ApplicationDTO applicationDTO,
                                                  @AuthenticationPrincipal Jwt jwt) {
-        // removal typically done by admin; passing remover if available
         Long removerId = null;
         if (jwt != null) {
             final com.uni.impact.user.User u = userRepository.findByEmailIgnoreCase(jwt.getClaimAsString("email")).orElse(null);
             removerId = u == null ? null : u.getUserId();
         }
         applicationService.remove(id, removerId, applicationDTO.getRemovalReason());
-        return ResponseEntity.ok(applicationMapper.toDto(applicationService.findById(id)));
+        return ResponseEntity.ok(applicationService.findByIdAsResponse(id));
     }
 
     @DeleteMapping("/{id}")

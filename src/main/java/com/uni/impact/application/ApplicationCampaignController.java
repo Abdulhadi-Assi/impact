@@ -1,5 +1,6 @@
 package com.uni.impact.application;
 
+import com.uni.impact.application.dto.VolunteerSearchCriteria;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 public class ApplicationCampaignController {
 
     private final ApplicationService applicationService;
-    private final ApplicationMapper applicationMapper;
 
     @PostMapping("/{id}/apply")
     public ResponseEntity<Void> apply(@PathVariable Long id, @RequestBody(required = false) ApplicationDTO applicationDTO,
@@ -25,9 +25,17 @@ public class ApplicationCampaignController {
     }
 
     // GET /api/v1/campaigns/{id}/applications
+    //   ?status=APPROVED          (filter by application status)
+    //   &searchText=ahmed         (search in student first/last name or email)
+    //   &collegeId=3              (filter by student's college)
+    //   &page=0&size=20           (pagination + sort supported via Pageable)
     @GetMapping("/{id}/applications")
-    public ResponseEntity<Page<ApplicationDTO>> getApplications(@PathVariable Long id, Pageable pageable) {
-        return ResponseEntity.ok(applicationService.findByCampaign(id, pageable).map(applicationMapper::toDto));
+    public ResponseEntity<Page<ApplicationResponseDTO>> getApplications(
+            @PathVariable Long id,
+            @ModelAttribute VolunteerSearchCriteria criteria,
+            Pageable pageable) {
+        criteria.setCampaignId(id);
+        return ResponseEntity.ok(applicationService.searchVolunteersAsResponse(criteria, pageable));
     }
 }
 

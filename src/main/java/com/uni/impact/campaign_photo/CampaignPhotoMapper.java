@@ -11,6 +11,10 @@ public interface CampaignPhotoMapper {
     @Mapping(target = "progress", source = "progress.progressId")
     CampaignPhotoDTO toDto(CampaignPhoto entity);
 
+    @Mapping(target = "campaignTitle", source = "campaign.title")
+    @Mapping(target = "progressPercentage", source = "progress.percentage")
+    CampaignPhotoResponseDTO toResponseDto(CampaignPhoto entity);
+
     @Mapping(target = "campaign", ignore = true)
     @Mapping(target = "progress", ignore = true)
     CampaignPhoto toEntity(CampaignPhotoDTO dto);

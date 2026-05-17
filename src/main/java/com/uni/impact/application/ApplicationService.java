@@ -22,32 +22,26 @@ public class ApplicationService {
     private final CampaignRepository campaignRepository;
     private final ApplicationMapper applicationMapper;
 
-    public Page<Application> findByCampaign(final Long campaignId, Pageable pageable) {
-        return applicationRepository.findByCampaignCampaignId(campaignId, pageable);
-    }
-
-    public Page<Application> findByStudent(final Long studentId, Pageable pageable) {
-        return applicationRepository.findByStudentUserId(studentId, pageable);
-    }
-
-    public Page<Application> findByStudentEmail(final String email, Pageable pageable) {
+    @Transactional(readOnly = true)
+    public Page<ApplicationResponseDTO> findByStudentEmailAsResponse(final String email, Pageable pageable) {
         final User user = userRepository.findByEmailIgnoreCase(email).orElseThrow(NotFoundException::new);
-        return findByStudent(user.getUserId(), pageable);
+        return applicationRepository.findByStudentUserId(user.getUserId(), pageable).map(applicationMapper::toResponseDto);
     }
 
-    public Page<Application> findAll(Pageable pageable) {
-        return applicationRepository.findAll(pageable);
-    }
-
-
-    public Page<Application> searchVolunteers(VolunteerSearchCriteria criteria, Pageable pageable) {
+    @Transactional(readOnly = true)
+    public Page<ApplicationResponseDTO> searchVolunteersAsResponse(VolunteerSearchCriteria criteria, Pageable pageable) {
         Specification<Application> spec = VolunteerSpecification.withSearchCriteria(criteria);
-        return applicationRepository.findAll(spec, pageable);
+        return applicationRepository.findAll(spec, pageable).map(applicationMapper::toResponseDto);
     }
 
     public Application findById(final Long id) {
         return applicationRepository.findById(id)
                 .orElseThrow(NotFoundException::new);
+    }
+
+    @Transactional(readOnly = true)
+    public ApplicationResponseDTO findByIdAsResponse(final Long id) {
+        return applicationMapper.toResponseDto(findById(id));
     }
 
     @Transactional

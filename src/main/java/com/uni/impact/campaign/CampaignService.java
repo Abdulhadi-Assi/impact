@@ -3,6 +3,8 @@ package com.uni.impact.campaign;
 import com.uni.impact.campaign.dto.CampaignRequestDTO;
 import com.uni.impact.campaign.dto.CampaignResponseDTO;
 import com.uni.impact.campaign.dto.CampaignSearchCriteria;
+import com.uni.impact.campaign_photo.CampaignPhoto;
+import com.uni.impact.campaign_photo.CampaignPhotoRepository;
 import com.uni.impact.category.Category;
 import com.uni.impact.category.CategoryRepository;
 import com.uni.impact.user.User;
@@ -21,6 +23,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -31,6 +36,7 @@ public class CampaignService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final CampaignMapper campaignMapper;
+    private final CampaignPhotoRepository campaignPhotoRepository;
 
     @Value("${app.upload.dir:uploads/photos}")
     private String uploadDir;
@@ -82,16 +88,17 @@ public class CampaignService {
                     to == CampaignStatus.APPROVED || to == CampaignStatus.REJECTED || to == CampaignStatus.CANCELED;
             case APPROVED -> to == CampaignStatus.ONGOING || to == CampaignStatus.CANCELED;
             case ONGOING -> to == CampaignStatus.COMPLETED || to == CampaignStatus.CANCELED;
-            default -> false; // REJECTED, COMPLETED, CANCELED are terminal
+            default -> false;
         };
     }
 
     @Transactional
     public CampaignResponseDTO create(final CampaignRequestDTO campaignDTO) {
         Campaign campaign = campaignMapper.toEntity(campaignDTO);
-        applyPhoto(campaign, campaignDTO);
         applyRelations(campaign, campaignDTO);
-        return campaignMapper.toResponseDto(campaignRepository.save(campaign));
+        Campaign saved = campaignRepository.save(campaign);
+        applyPhotos(saved, campaignDTO);
+        return campaignMapper.toResponseDto(saved);
     }
 
     @Transactional
@@ -99,9 +106,10 @@ public class CampaignService {
         Campaign campaign = campaignRepository.findById(campaignId)
                 .orElseThrow(NotFoundException::new);
         campaignMapper.updateEntity(campaign, campaignDTO);
-        applyPhoto(campaign, campaignDTO);
         applyRelations(campaign, campaignDTO);
-        return campaignMapper.toResponseDto(campaignRepository.save(campaign));
+        Campaign saved = campaignRepository.save(campaign);
+        applyPhotos(saved, campaignDTO);
+        return campaignMapper.toResponseDto(saved);
     }
 
     public void delete(final Long campaignId) {
@@ -130,11 +138,45 @@ public class CampaignService {
         campaign.setCategory(category);
     }
 
-    private void applyPhoto(final Campaign campaign, final CampaignRequestDTO campaignDTO) {
-        MultipartFile photoFile = campaignDTO.getPhotoFile();
-        if (photoFile != null && !photoFile.isEmpty()) {
-            campaign.setPhoto(storePhoto(photoFile));
+    private void applyPhotos(final Campaign campaign, final CampaignRequestDTO campaignDTO) {
+        List<MultipartFile> uploads = collectUploads(campaignDTO);
+        if (uploads.isEmpty()) {
+            return;
         }
+
+        List<CampaignPhoto> savedPhotos = new ArrayList<>();
+        for (MultipartFile file : uploads) {
+            String url = storePhoto(file);
+            CampaignPhoto photo = new CampaignPhoto();
+            photo.setCampaign(campaign);
+            photo.setPhotoUrl(url);
+            photo.setUploadedAt(LocalDateTime.now());
+            CampaignPhoto persisted = campaignPhotoRepository.save(photo);
+            savedPhotos.add(persisted);
+            campaign.getCampaignCampaignPhotos().add(persisted);
+        }
+
+        // First uploaded photo becomes the primary `photo` on the campaign (back-compat)
+        if (campaign.getPhoto() == null) {
+            campaign.setPhoto(savedPhotos.getFirst().getPhotoUrl());
+        }
+        campaignRepository.save(campaign);
+    }
+
+    private List<MultipartFile> collectUploads(final CampaignRequestDTO dto) {
+        List<MultipartFile> out = new ArrayList<>();
+        MultipartFile single = dto.getPhotoFile();
+        if (single != null && !single.isEmpty()) {
+            out.add(single);
+        }
+        if (dto.getPhotoFiles() != null) {
+            for (MultipartFile f : dto.getPhotoFiles()) {
+                if (f != null && !f.isEmpty()) {
+                    out.add(f);
+                }
+            }
+        }
+        return out;
     }
 
     private String storePhoto(final MultipartFile photoFile) {

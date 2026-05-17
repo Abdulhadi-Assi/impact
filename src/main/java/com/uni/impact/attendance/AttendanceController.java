@@ -15,16 +15,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class AttendanceController {
 
     private final AttendanceService attendanceService;
-    private final AttendanceMapper attendanceMapper;
 
     @GetMapping
-    public ResponseEntity<Page<AttendanceDTO>> findAll(Pageable pageable) {
-        return ResponseEntity.ok(attendanceService.findAll(pageable).map(attendanceMapper::toDto));
+    public ResponseEntity<Page<AttendanceResponseDTO>> findAll(Pageable pageable) {
+        return ResponseEntity.ok(attendanceService.findAllAsResponse(pageable));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AttendanceDTO> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(attendanceMapper.toDto(attendanceService.findById(id)));
+    public ResponseEntity<AttendanceResponseDTO> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(attendanceService.findByIdAsResponse(id));
     }
     // Creation / update / delete are handled via campaign-scoped endpoints in AttendanceCampaignController
     // (POST /api/v1/campaigns/{id}/attendance, /attendance/bulk, GET /api/v1/campaigns/{id}/attendance)

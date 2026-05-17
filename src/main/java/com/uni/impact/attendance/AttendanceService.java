@@ -21,15 +21,23 @@ public class AttendanceService {
     private final CampaignRepository campaignRepository;
     private final AttendanceMapper attendanceMapper;
 
-    public Page<Attendance> findAll(Pageable pageable) {
-        return attendanceRepository.findAll(pageable);
+    @Transactional(readOnly = true)
+    public Page<AttendanceResponseDTO> findAllAsResponse(Pageable pageable) {
+        return attendanceRepository.findAll(pageable).map(attendanceMapper::toResponseDto);
     }
+
+    @Transactional(readOnly = true)
+    public AttendanceResponseDTO findByIdAsResponse(final Long attendanceId) {
+        return attendanceMapper.toResponseDto(findById(attendanceId));
+    }
+
     public Attendance findById(final Long attendanceId) {
         return attendanceRepository.findById(attendanceId).orElseThrow(NotFoundException::new);
     }
 
-    public Page<Attendance> findByCampaign(final Long campaignId,Pageable pageable) {
-        return attendanceRepository.findByCampaignCampaignId(campaignId, pageable);
+    @Transactional(readOnly = true)
+    public Page<AttendanceResponseDTO> findByCampaignAsResponse(final Long campaignId, Pageable pageable) {
+        return attendanceRepository.findByCampaignCampaignId(campaignId, pageable).map(attendanceMapper::toResponseDto);
     }
 
     @Transactional

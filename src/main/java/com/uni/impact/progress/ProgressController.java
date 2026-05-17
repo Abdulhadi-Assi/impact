@@ -15,16 +15,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProgressController {
 
     private final ProgressService progressService;
-    private final ProgressMapper progressMapper;
+
 
     @GetMapping
-    public ResponseEntity<Page<ProgressDTO>> findAll(Pageable pageable) {
-        return ResponseEntity.ok(progressService.findAll(pageable).map(progressMapper::toDto));
+    public ResponseEntity<Page<ProgressResponseDTO>> findAll(Pageable pageable) {
+        return ResponseEntity.ok(progressService.findAllAsResponse(pageable));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProgressDTO> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(progressMapper.toDto(progressService.findById(id)));
+    public ResponseEntity<ProgressResponseDTO> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(progressService.findByIdAsResponse(id));
     }
     // Creation / update / delete are handled via campaign-scoped endpoints in ProgressCampaignController
     // (POST /api/v1/campaigns/{id}/progress and GET /api/v1/campaigns/{id}/progress)

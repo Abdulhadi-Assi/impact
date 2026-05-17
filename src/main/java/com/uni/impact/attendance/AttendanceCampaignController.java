@@ -17,11 +17,11 @@ public class AttendanceCampaignController {
     private final AttendanceMapper attendanceMapper;
 
     @PostMapping("/{id}/attendance")
-    public ResponseEntity<AttendanceDTO> createAttendance(@PathVariable Long id, @RequestBody AttendanceDTO attendanceDTO) {
+    public ResponseEntity<AttendanceResponseDTO> createAttendance(@PathVariable Long id, @RequestBody AttendanceDTO attendanceDTO) {
         attendanceDTO.setCampaign(id);
         Attendance created = attendanceService.create(attendanceDTO);
         return ResponseEntity.created(URI.create("/api/v1/attendances/" + created.getAttendanceId()))
-                .body(attendanceMapper.toDto(created));
+                .body(attendanceMapper.toResponseDto(created));
     }
 
     @PostMapping("/{id}/attendance/bulk")
@@ -32,8 +32,8 @@ public class AttendanceCampaignController {
     }
 
     @GetMapping("/{id}/attendance")
-    public ResponseEntity<Page<AttendanceDTO>> getAttendance(@PathVariable Long id, Pageable pageable) {
-        return ResponseEntity.ok(attendanceService.findByCampaign(id, pageable).map(attendanceMapper::toDto));
+    public ResponseEntity<Page<AttendanceResponseDTO>> getAttendance(@PathVariable Long id, Pageable pageable) {
+        return ResponseEntity.ok(attendanceService.findByCampaignAsResponse(id, pageable));
     }
 }
 

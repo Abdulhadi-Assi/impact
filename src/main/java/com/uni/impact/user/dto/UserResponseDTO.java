@@ -29,7 +29,5 @@ public class UserResponseDTO {
     private String location;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Long collegeId;
     private String collegeName;
 }
-

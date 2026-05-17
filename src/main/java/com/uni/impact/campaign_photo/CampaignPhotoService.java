@@ -12,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -32,16 +31,23 @@ public class CampaignPhotoService {
     @Value("${app.upload.dir:uploads/photos}")
     private String uploadDir;
 
-    public Page<CampaignPhoto> findAll(Pageable pageable) {
-        return campaignPhotoRepository.findAll(pageable);
+    @Transactional(readOnly = true)
+    public Page<CampaignPhotoResponseDTO> findAllAsResponse(Pageable pageable) {
+        return campaignPhotoRepository.findAll(pageable).map(campaignPhotoMapper::toResponseDto);
     }
 
     public CampaignPhoto findById(final Long photoId) {
         return campaignPhotoRepository.findById(photoId).orElseThrow(NotFoundException::new);
     }
 
-    public Page<CampaignPhoto> findByCampaign(final Long campaignId,Pageable pageable) {
-        return campaignPhotoRepository.findByCampaignCampaignId(campaignId, pageable);
+    @Transactional(readOnly = true)
+    public CampaignPhotoResponseDTO findByIdAsResponse(final Long photoId) {
+        return campaignPhotoMapper.toResponseDto(findById(photoId));
+    }
+
+    @Transactional(readOnly = true)
+    public Page<CampaignPhotoResponseDTO> findByCampaignAsResponse(final Long campaignId, Pageable pageable) {
+        return campaignPhotoRepository.findByCampaignCampaignId(campaignId, pageable).map(campaignPhotoMapper::toResponseDto);
     }
 
     @Transactional

@@ -15,16 +15,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class CampaignPhotoController {
 
     private final CampaignPhotoService campaignPhotoService;
-    private final CampaignPhotoMapper campaignPhotoMapper;
+
 
     @GetMapping
-    public ResponseEntity<Page<CampaignPhotoDTO>> findAll(Pageable pageable) {
-        return ResponseEntity.ok(campaignPhotoService.findAll(pageable).map(campaignPhotoMapper::toDto));
+    public ResponseEntity<Page<CampaignPhotoResponseDTO>> findAll(Pageable pageable) {
+        return ResponseEntity.ok(campaignPhotoService.findAllAsResponse(pageable));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CampaignPhotoDTO> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(campaignPhotoMapper.toDto(campaignPhotoService.findById(id)));
+    public ResponseEntity<CampaignPhotoResponseDTO> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(campaignPhotoService.findByIdAsResponse(id));
     }
     // Creation / update / delete are handled via campaign-scoped endpoints in CampaignPhotoCampaignController
     // (POST /api/v1/campaigns/{id}/photos and GET /api/v1/campaigns/{id}/photos)
