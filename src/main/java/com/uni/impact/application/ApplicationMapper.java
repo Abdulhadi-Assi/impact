@@ -16,14 +16,11 @@ public interface ApplicationMapper {
     @Mapping(target = "removedBy", source = "removedBy.userId")
     ApplicationDTO toDto(Application entity);
 
-    @Mapping(target = "studentName", source = "student", qualifiedByName = "fullName")
-    @Mapping(target = "studentEmail", source = "student.email")
-    @Mapping(target = "studentPhone", source = "student.phone")
-    @Mapping(target = "studentPhoto", source = "student.photo")
-    @Mapping(target = "studentNumber", source = "student.studentNumber")
-    @Mapping(target = "studentAcademicYear", source = "student.academicYear")
-    @Mapping(target = "studentCollegeName", source = "student.college.name")
+    @Mapping(target = "campaignId", source = "campaign.campaignId")
     @Mapping(target = "campaignTitle", source = "campaign.title")
+    @Mapping(target = "campaignPhoto", source = "campaign.photo")
+    @Mapping(target = "campaignCategory", source = "campaign.category.name")
+    @Mapping(target = "campaignCollegeName", source = "campaign.proposedBy.college.name")
     @Mapping(target = "reviewedByName", source = "reviewedBy", qualifiedByName = "fullName")
     @Mapping(target = "removedByName", source = "removedBy", qualifiedByName = "fullName")
     ApplicationResponseDTO toResponseDto(Application entity);

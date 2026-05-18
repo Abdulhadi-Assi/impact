@@ -25,15 +25,12 @@ public class ApplicationResponseDTO {
     private String removalReason;
     private LocalDateTime removedAt;
 
-    private String studentName;
-    private String studentEmail;
-    private String studentPhone;
-    private String studentPhoto;
-    private String studentNumber;
-    private Integer studentAcademicYear;
-    private String studentCollegeName;
-
+    private Long campaignId;
     private String campaignTitle;
+    private String campaignPhoto;
+    private String campaignCategory;
+    private String campaignCollegeName;
+
     private String reviewedByName;
     private String removedByName;
 }
